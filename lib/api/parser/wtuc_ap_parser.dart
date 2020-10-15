@@ -101,7 +101,7 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
   };
   var document = parse(html);
 
-  if (document.getElementsByTagName("table").length == 0) {
+  if (document.getElementsByTagName("table").length < 3) {
     //table not found
     return data;
   }
