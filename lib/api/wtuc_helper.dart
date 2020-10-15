@@ -120,4 +120,24 @@ class WebApHelper {
     }
     return false;
   }
+
+  Future<bool> wzuApLogin({
+    @required String username,
+    @required String password,
+  }) async {
+    Response _login_request = await dio.post(
+      "https://info.wzu.edu.tw/wtuc/portalidx.jsp",
+      data: {"uid": username, "pwd": password},
+      options: Options(contentType: Headers.formUrlEncodedContentType),
+    );
+
+    // login status check
+    Response login_check_request = await dio.get(
+        "https://info.wzu.edu.tw/wtuc/portalleft.jsp?sys_name=web&sys_kind=01");
+    if (login_check_request.data.substring(0, 1000).indexOf("alert(") > -1) {
+      return false;
+    }
+    infoIsLogin = true;
+    return true;
+  }
 }
