@@ -256,3 +256,18 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
 
   return data;
 }
+
+int wtucApQueryStatusParser(dynamic html) {
+  /*
+    Retrun type Int
+    1: need relogin.
+    */
+  if (html is Uint8List) {
+    html = clearTransEncoding(html);
+  }
+  if (html.indexOf("parent.location.href='../index.html'") > -1 ||
+      html.indexOf(">alert('Please Logon'") > -1) {
+    return 1;
+  }
+  return 0;
+}

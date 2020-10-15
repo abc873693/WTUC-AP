@@ -20,6 +20,9 @@ class WebApHelper {
   static WebApHelper _instance;
   static CookieJar cookieJar;
 
+  static int reLoginReTryCountsLimit = 3;
+  static int reLoginReTryCounts = 0;
+
   bool ssoIsLogin = false;
   bool infoIsLogin = false;
   static String ssoHost = "https://sso.wzu.edu.tw";
@@ -186,6 +189,15 @@ class WebApHelper {
         options: _options,
       );
     }
+
+    if (wtucApQueryStatusParser(request.data) == 1) {
+      if (Helper.isSupportCacheData) _manager.delete(cacheKey);
+      reLoginReTryCounts += 1;
+      await wzuApLogin(username: Helper.username, password: Helper.password);
+      return wtucApQuery(queryQid, queryData, bytesResponse: bytesResponse);
+    }
+
+    reLoginReTryCounts = 0;
 
     return request;
   }
