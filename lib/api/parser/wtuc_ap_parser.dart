@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:html/parser.dart' show parse;
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 String clearTransEncoding(List<int> htmlBytes) {
   // htmlBytes is fixed-length list, need copy.
@@ -78,4 +79,180 @@ String formUrlEncoded(Map<String, dynamic> data) {
     temp += "${key}=${value}";
   });
   return temp;
+}
+
+Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
+  if (html is Uint8List) {
+    html = clearTransEncoding(html);
+  }
+
+  Map<String, dynamic> data = {
+    "courses": [],
+    "coursetable": {
+      "timeCodes": [],
+      "Monday": [],
+      "Tuesday": [],
+      "Wednesday": [],
+      "Thursday": [],
+      "Friday": [],
+      "Saturday": [],
+      "Sunday": []
+    }
+  };
+  var document = parse(html);
+
+  if (document.getElementsByTagName("table").length == 0) {
+    //table not found
+    return data;
+  }
+
+  //make timetable
+  var secondTable =
+      document.getElementsByTagName("table")[3].getElementsByTagName("tr");
+  try {
+    //remark:Best split is regex but... Chinese have some difficulty Q_Q
+    for (int i = 1; i < secondTable.length; i++) {
+      if (i == 11) {
+        // bypass "night" content td.
+        continue;
+      }
+      var _temptext =
+          secondTable[i].getElementsByTagName('td')[0].text.replaceAll(" ", "");
+
+      data['coursetable']['timeCodes'].add(_temptext
+          .substring(0, _temptext.length - 9)
+          .replaceAll(String.fromCharCode(160), ""));
+    }
+  } catch (e, s) {
+    if (!kIsWeb || (Platform.isAndroid || Platform.isIOS))
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: document.getElementsByTagName("table")[1].text,
+      );
+  }
+  //make each day.
+  List keyName = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+  Map<String, String> dayNameConvert = {
+    'Monday': '(一)',
+    'Tuesday': '(二)',
+    'Wednesday': '(三)',
+    'Thursday': '(四)',
+    'Friday': '(五)',
+    'Saturday': '(六)',
+    'Sunday': '(日)'
+  };
+  try {
+    for (int key = 0; key < keyName.length; key++) {
+      for (int eachSession = 1;
+          eachSession < data['coursetable']['timeCodes'].length + 1;
+          eachSession++) {
+        if (eachSession == 11) {
+          // bypass "night" content td.
+          continue;
+        }
+
+        var eachDays = document
+            .getElementsByTagName("table")[3]
+            .getElementsByTagName("tr")[eachSession]
+            .getElementsByTagName("td")[key + 1];
+
+        if (eachDays.outerHtml.length <= 40) {
+          continue;
+        }
+        var splitData = (eachDays.outerHtml
+            .substring(35, eachDays.outerHtml.length - 11)
+            .split("<br>"));
+
+        for (int i = 0; i < splitData.length; i++) {
+          splitData[i] = splitData[i].replaceAll("&nbsp;", "");
+          splitData[i] = splitData[i].replaceAll(" ", "");
+        }
+        var _eachDaysDate = document
+            .getElementsByTagName("table")[3]
+            .getElementsByTagName("tr")[eachSession]
+            .getElementsByTagName("td")[0]
+            .outerHtml;
+
+        var courseTime = _eachDaysDate
+            .substring(_eachDaysDate.indexOf('nowrap="">') + 10,
+                _eachDaysDate.indexOf("</td>"))
+            .split("<br>");
+
+        if (splitData.length <= 1) {
+          continue;
+        }
+
+        String title = splitData[0].replaceAll("\n", "");
+        if (title.lastIndexOf(">") > -1) {
+          title = title
+              .substring(title.lastIndexOf(">") + 1, title.length)
+              .replaceAll("&nbsp;", '')
+              .replaceAll(";", '');
+        }
+        data['coursetable'][keyName[key]].add({
+          'title': title,
+          'date': {
+            "startTime":
+                "${courseTime[1].split('-')[0].substring(0, 2)}:${courseTime[1].split('-')[0].substring(2, 4)}",
+            "endTime":
+                "${courseTime[1].split('-')[1].substring(0, 2)}:${courseTime[1].split('-')[1].substring(2, 4)}",
+            'section': courseTime[0]
+                .replaceAll(" ", "")
+                .replaceAll(String.fromCharCode(160), "")
+          },
+          'location': {"room": splitData[3]},
+          'instructors': splitData[2].split(","),
+        });
+      }
+    }
+  } catch (e, s) {
+    if (!kIsWeb || (Platform.isAndroid || Platform.isIOS))
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        s,
+        reason: document.getElementsByTagName("table")[3].text,
+      );
+  }
+  Map<String, Map<String, dynamic>> _temp = {};
+  //Use Map to aviod duplicate
+  // use coursetable to create courses.
+  for (int key = 0; key < keyName.length; key++) {
+    var eachDay = data['coursetable'][keyName[key]];
+    for (int eachIndex = 0; eachIndex < eachDay.length; eachIndex++) {
+      if (_temp['${key}_${eachDay[eachIndex]['title']}}'] != null) {
+        _temp['${key}_${eachDay[eachIndex]['title']}}']['times'] +=
+            ",第${eachIndex}節";
+
+        continue;
+      }
+      //
+      _temp['${key}_${eachDay[eachIndex]['title']}}'] = {
+        'code': "",
+        'title': eachDay[eachIndex]['title'],
+        'className': "",
+        'group': "",
+        'units': "",
+        'hours': "",
+        'required': "",
+        'at': "",
+        'times': "${dayNameConvert[keyName[key]]} 第${eachIndex}節 ",
+        "instructors": eachDay[eachIndex]['instructors'],
+        'location': eachDay[eachIndex]['location']
+      };
+    }
+  }
+  _temp.values.forEach((element) {
+    data['courses'].add(element);
+  });
+
+  return data;
 }
