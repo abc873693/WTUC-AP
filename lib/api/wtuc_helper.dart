@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:wtuc_ap/api/private_cookie_manager.dart';
 import 'package:wtuc_ap/api/parser/wtuc_ap_parser.dart';
-
+import 'package:ap_common/models/course_data.dart';
 // callback
 import 'package:ap_common/callback/general_callback.dart';
 
@@ -188,5 +188,30 @@ class WebApHelper {
     }
 
     return request;
+  }
+
+  Future<CourseData> wzuCoursetable(String years, String semesterValue) async {
+    if (!Helper.isSupportCacheData) {
+      var query = await wtucApQuery(
+        "ag001",
+        {"arg01": years, "arg02": semesterValue},
+        bytesResponse: true,
+      );
+      return CourseData.fromJson(await wtucCoursetableParser(query.data));
+    }
+    var query = await wtucApQuery(
+      "ag001",
+      {"arg01": years, "arg02": semesterValue},
+      cacheKey: "${coursetableCacheKey}_${years}_${semesterValue}",
+      cacheExpiredTime: Duration(hours: 6),
+      bytesResponse: true,
+    );
+    var parsedData = await wtucCoursetableParser(query.data);
+    if (parsedData["courses"].length == 0) {
+      _manager.delete("${coursetableCacheKey}_${years}_${semesterValue}");
+    }
+    return CourseData.fromJson(
+      parsedData,
+    );
   }
 }
