@@ -302,3 +302,39 @@ Map<String, dynamic> wtucSemestersParser(String html) {
   }
   return data;
 }
+
+Map<String, dynamic> wtucScoresParser(String html) {
+  var document = parse(html);
+
+  Map<String, dynamic> data = {
+    "scores": [],
+    "detail": {
+      "conduct": null,
+      "classRank": null,
+      "departmentRank": null,
+      'average': null
+    }
+  };
+
+  try {
+    var table =
+        document.getElementsByTagName("table")[2].getElementsByTagName("tr");
+    for (int scoresIndex = 1; scoresIndex < table.length; scoresIndex++) {
+      var td = table[scoresIndex].getElementsByTagName('td');
+      data['scores'].add({
+        "title": td[1].text,
+        'units': td[2].text,
+        'hours': td[3].text,
+        'required': "",
+        'at': "",
+        'middleScore': td[5].text,
+        'generalScore': td[4].text,
+        'finalScore': td[6].text,
+        'totalScore': td[10].text,
+        'remark': "",
+      });
+    }
+  } catch (e) {}
+
+  return data;
+}

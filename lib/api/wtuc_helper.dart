@@ -10,6 +10,8 @@ import 'package:crypto/crypto.dart';
 import 'package:wtuc_ap/api/private_cookie_manager.dart';
 import 'package:wtuc_ap/api/parser/wtuc_ap_parser.dart';
 import 'package:ap_common/models/course_data.dart';
+import 'package:ap_common/models/score_data.dart';
+
 // callback
 import 'package:ap_common/callback/general_callback.dart';
 
@@ -257,5 +259,30 @@ class WebApHelper {
     }
 
     return SemesterData.fromJson(parsedData);
+  }
+
+  Future<ScoreData> wtucScores(String years, String semesterValue) async {
+    if (!Helper.isSupportCacheData) {
+      var query = await wtucApQuery(
+        "ag008",
+        {"arg01": years, "arg02": semesterValue},
+      );
+      return ScoreData.fromJson(wtucScoresParser(query.data));
+    }
+    var query = await wtucApQuery(
+      "ag008",
+      {"arg01": years, "arg02": semesterValue},
+      cacheKey: "${scoresCacheKey}_${years}_${semesterValue}",
+      cacheExpiredTime: Duration(hours: 6),
+    );
+
+    var parsedData = wtucScoresParser(query.data);
+    if (parsedData["scores"].length == 0) {
+      _manager.delete("${scoresCacheKey}_${years}_${semesterValue}");
+    }
+
+    return ScoreData.fromJson(
+      parsedData,
+    );
   }
 }
