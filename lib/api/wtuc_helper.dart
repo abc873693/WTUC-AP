@@ -211,7 +211,7 @@ class WebApHelper {
     return request;
   }
 
-  Future<CourseData> wzuCoursetable(String years, String semesterValue) async {
+  Future<CourseData> wtucCoursetable(String years, String semesterValue) async {
     if (!Helper.isSupportCacheData) {
       var query = await wtucApQuery(
         "ag001",
