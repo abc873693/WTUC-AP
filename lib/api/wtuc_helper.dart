@@ -140,4 +140,53 @@ class WebApHelper {
     infoIsLogin = true;
     return true;
   }
+
+  Future<Response> wtucApQuery(
+    String queryQid,
+    Map<String, String> queryData, {
+    String cacheKey,
+    Duration cacheExpiredTime,
+    bool bytesResponse,
+  }) async {
+    String url =
+        "https://info.wzu.edu.tw/wtuc/${queryQid.substring(0, 2)}_pro/$queryQid.jsp";
+    Options _options;
+    dynamic requestData;
+    if (cacheKey == null) {
+      _options = Options(contentType: Headers.formUrlEncodedContentType);
+      if (bytesResponse != null) {
+        _options.responseType = ResponseType.bytes;
+      }
+      requestData = queryData;
+    } else {
+      dio.options.headers["Content-Type"] = "application/x-www-form-urlencoded";
+      Options other_options;
+      if (bytesResponse != null) {
+        other_options = Options(responseType: ResponseType.bytes);
+      }
+      _options = buildConfigurableCacheOptions(
+        options: other_options,
+        maxAge: cacheExpiredTime ?? Duration(seconds: 60),
+        primaryKey: cacheKey,
+      );
+      requestData = formUrlEncoded(queryData);
+    }
+    Response<dynamic> request;
+
+    if (bytesResponse != null) {
+      request = await dio.post<List<int>>(
+        url,
+        data: requestData,
+        options: _options,
+      );
+    } else {
+      request = await dio.post(
+        url,
+        data: requestData,
+        options: _options,
+      );
+    }
+
+    return request;
+  }
 }
