@@ -1,4 +1,5 @@
 //dio
+import 'package:ap_common/models/semester_data.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
@@ -150,9 +151,15 @@ class WebApHelper {
     String cacheKey,
     Duration cacheExpiredTime,
     bool bytesResponse,
+    String otherUrl,
   }) async {
-    String url =
-        "https://info.wzu.edu.tw/wtuc/${queryQid.substring(0, 2)}_pro/$queryQid.jsp";
+    String url;
+    if (otherUrl == null) {
+      url =
+          "https://info.wzu.edu.tw/wtuc/${queryQid.substring(0, 2)}_pro/${queryQid}.jsp";
+    } else {
+      url = otherUrl;
+    }
     Options _options;
     dynamic requestData;
     if (cacheKey == null) {
@@ -225,5 +232,30 @@ class WebApHelper {
     return CourseData.fromJson(
       parsedData,
     );
+  }
+
+  Future<SemesterData> wtucSemesters() async {
+    if (!Helper.isSupportCacheData) {
+      var query = await wtucApQuery(
+        null,
+        {"fncid": "AG001"},
+        otherUrl: 'https://info.wzu.edu.tw/wtuc/system/sys001_00.jsp',
+      );
+      return SemesterData.fromJson(wtucSemestersParser(query.data));
+    }
+    var query = await wtucApQuery(
+      null,
+      {"fncid": "AG001"},
+      otherUrl: 'https://info.wzu.edu.tw/wtuc/system/sys001_00.jsp',
+      cacheKey: semesterCacheKey,
+      cacheExpiredTime: Duration(hours: 3),
+    );
+    var parsedData = wtucSemestersParser(query.data);
+    if (parsedData["data"].length < 1) {
+      //data error delete cache
+      _manager.delete(semesterCacheKey);
+    }
+
+    return SemesterData.fromJson(parsedData);
   }
 }
