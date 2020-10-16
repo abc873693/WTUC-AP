@@ -1,5 +1,6 @@
 //dio
 import 'package:ap_common/models/semester_data.dart';
+import 'package:ap_common/models/user_info.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
@@ -282,6 +283,30 @@ class WebApHelper {
     }
 
     return ScoreData.fromJson(
+      parsedData,
+    );
+  }
+
+  Future<UserInfo> wtucUserInfo() async {
+    if (!Helper.isSupportCacheData) {
+      var query = await wtucApQuery("bg004", null);
+      print(query.data);
+      return UserInfo.fromJson(
+        wtucUserInfoParser(query.data),
+      );
+    }
+    var query = await wtucApQuery(
+      "bg004",
+      null,
+      cacheKey: userInfoCacheKey,
+      cacheExpiredTime: Duration(hours: 6),
+    );
+
+    var parsedData = wtucUserInfoParser(query.data);
+    if (parsedData["id"] == null) {
+      _manager.delete(userInfoCacheKey);
+    }
+    return UserInfo.fromJson(
       parsedData,
     );
   }

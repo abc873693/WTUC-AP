@@ -338,3 +338,32 @@ Map<String, dynamic> wtucScoresParser(String html) {
 
   return data;
 }
+
+Map<String, dynamic> wtucUserInfoParser(dynamic html) {
+  if (html is Uint8List) {
+    html = clearTransEncoding(html);
+  }
+  var document = parse(html);
+  Map<String, dynamic> data = {
+    "educationSystem": null,
+    "department": null,
+    "className": null,
+    "id": null,
+    "name": null,
+    "pictureUrl": null
+  };
+  var tableDom = document.getElementsByTagName("table") ?? [];
+  if (tableDom.length < 2) {
+    return data;
+  }
+  var trDom =
+      document.getElementsByTagName("table")[1].getElementsByTagName("tr") ??
+          [];
+  if (trDom.length < 5) {
+    return data;
+  }
+  data["name"] = trDom[1].getElementsByTagName("td")[1].text ?? null;
+  data["className"] = trDom[2].getElementsByTagName("td")[1].text ?? null;
+  data["id"] = trDom[3].getElementsByTagName("td")[1].text ?? null;
+  return data;
+}
