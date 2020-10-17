@@ -2,6 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:ap_common/callback/general_callback.dart';
+
+/// TODO: Select senesterData use by local model or ap_common.
+import 'package:ap_common/models/semester_data.dart';
+
+import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wtuc_ap/api/wtuc_helper.dart';
@@ -53,6 +58,24 @@ class Helper {
         GeneralResponse.unknownError(),
       );
       throw e;
+    }
+    return null;
+  }
+
+  Future<SemesterData> getSemester({
+    GeneralCallback<SemesterData> callback,
+  }) async {
+    try {
+      var data = await WebApHelper.instance.wtucSemesters();
+
+      return (callback == null) ? data : callback.onSuccess(data);
+    } on DioError catch (dioError) {
+      callback?.onFailure(dioError);
+      if (callback == null) throw dioError;
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
     }
     return null;
   }
