@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:ap_common/callback/general_callback.dart';
+import 'package:ap_common/models/course_data.dart';
 
 /// TODO: Select senesterData use by local model or ap_common.
 import 'package:ap_common/models/semester_data.dart';
@@ -68,6 +69,32 @@ class Helper {
     try {
       var data = await WebApHelper.instance.wtucSemesters();
 
+      return (callback == null) ? data : callback.onSuccess(data);
+    } on DioError catch (dioError) {
+      callback?.onFailure(dioError);
+      if (callback == null) throw dioError;
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
+    }
+    return null;
+  }
+
+  Future<CourseData> getCourseTables({
+    @required Semester semester,
+    GeneralCallback<CourseData> callback,
+  }) async {
+    // if (isExpire()) await login(username: username, password: password);
+    var data = await WebApHelper.instance.wtucCoursetable(
+      semester.year,
+      semester.value,
+    );
+
+    try {
+      if (data != null && data.courses != null && data.courses.length != 0) {
+        data.updateIndex();
+      }
       return (callback == null) ? data : callback.onSuccess(data);
     } on DioError catch (dioError) {
       callback?.onFailure(dioError);
