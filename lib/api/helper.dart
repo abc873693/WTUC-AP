@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/course_data.dart';
+import 'package:ap_common/models/score_data.dart';
 
 /// TODO: Select senesterData use by local model or ap_common.
 import 'package:ap_common/models/semester_data.dart';
@@ -115,6 +116,28 @@ class Helper {
       var data = await WebApHelper.instance.wtucUserInfo();
 
       if (data.id == null) data.id = username;
+      return (callback == null) ? data : callback.onSuccess(data);
+    } on DioError catch (dioError) {
+      callback?.onFailure(dioError);
+      if (callback == null) throw dioError;
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
+    }
+    return null;
+  }
+
+  Future<ScoreData> getScores({
+    @required Semester semester,
+    GeneralCallback<ScoreData> callback,
+  }) async {
+    try {
+      var data = await WebApHelper.instance.wtucScores(
+        semester.year,
+        semester.value,
+      );
+      if (data != null && data.scores.length == 0) data = null;
       return (callback == null) ? data : callback.onSuccess(data);
     } on DioError catch (dioError) {
       callback?.onFailure(dioError);
