@@ -6,6 +6,7 @@ import 'package:ap_common/models/course_data.dart';
 
 /// TODO: Select senesterData use by local model or ap_common.
 import 'package:ap_common/models/semester_data.dart';
+import 'package:ap_common/models/user_info.dart';
 
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:dio/dio.dart';
@@ -95,6 +96,25 @@ class Helper {
       if (data != null && data.courses != null && data.courses.length != 0) {
         data.updateIndex();
       }
+      return (callback == null) ? data : callback.onSuccess(data);
+    } on DioError catch (dioError) {
+      callback?.onFailure(dioError);
+      if (callback == null) throw dioError;
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
+    }
+    return null;
+  }
+
+  Future<UserInfo> getUsersInfo({
+    GeneralCallback<UserInfo> callback,
+  }) async {
+    try {
+      var data = await WebApHelper.instance.wtucUserInfo();
+
+      if (data.id == null) data.id = username;
       return (callback == null) ? data : callback.onSuccess(data);
     } on DioError catch (dioError) {
       callback?.onFailure(dioError);
