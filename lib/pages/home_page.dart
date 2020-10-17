@@ -67,7 +67,7 @@ class HomePageState extends State<HomePage> {
 
   static aboutPage(BuildContext context, {String assetImage}) {
     return AboutUsPage(
-      assetImage: assetImage ?? ImageAssets.sectionJiangong,
+      assetImage: assetImage ?? ImageAssets.section,
       githubName: 'NKUST-ITC',
       email: 'abc873693@gmail.com',
       appLicense: AppLocalizations.of(context).aboutOpenSourceContent,
@@ -198,7 +198,7 @@ class HomePageState extends State<HomePage> {
             icon: ApIcon.face,
             title: ap.about,
             onTap: () => _openPage(
-              aboutPage(context, assetImage: ImageAssets.sectionJiangong),
+              aboutPage(context, assetImage: ImageAssets.section),
             ),
           ),
           DrawerItem(
@@ -255,7 +255,7 @@ class HomePageState extends State<HomePage> {
             context,
             aboutPage(
               context,
-              assetImage: ImageAssets.sectionJiangong,
+              assetImage: ImageAssets.section,
             ),
           );
           break;
