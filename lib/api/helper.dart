@@ -21,7 +21,6 @@ class Helper {
 
   static String username;
   static String password;
-  static DateTime expireTime;
 
   static bool isSupportCacheData =
       (!kIsWeb && (Platform.isIOS || Platform.isMacOS || Platform.isAndroid));
