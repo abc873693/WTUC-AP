@@ -1,7 +1,7 @@
 class ImageAssets {
   static const String basePath = 'assets/images';
 
-  static String sectionJiangong = '$basePath/section_jiangong.webp';
+  static String section = '$basePath/section.webp';
 }
 
 class FileAssets {
