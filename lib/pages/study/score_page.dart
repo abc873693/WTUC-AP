@@ -3,9 +3,7 @@ import 'package:ap_common/models/semester_data.dart';
 import 'package:ap_common/scaffold/score_scaffold.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import '../../res/assets.dart';
+import 'package:wtuc_ap/api/helper.dart';
 
 class ScorePage extends StatefulWidget {
   static const String routerName = '/score';
@@ -55,40 +53,52 @@ class ScorePageState extends State<ScorePage> {
         await _getSemesterScore();
         return null;
       },
-      onSearchButtonClick: () {
-//        key.currentState.pickSemester();
-      },
-      details: [
-        '${ap.conductScore}：${scoreData?.detail?.conduct ?? ''}',
-        '${ap.average}：${scoreData?.detail?.average ?? ''}',
-        '${ap.classRank}：${scoreData?.detail?.classRank ?? ''}',
-        '${ap.departmentRank}：${scoreData?.detail?.departmentRank ?? ''}',
-      ],
+      details: [],
     );
   }
 
   void _getSemester() async {
-    String rawString = await rootBundle.loadString(FileAssets.semesters);
-    semesterData = SemesterData.fromRawJson(rawString);
-    var i = 0;
-    semesterData.data.forEach((option) {
-      if (option.text == semesterData.defaultSemester.text) semesterData.currentIndex = i;
-      i++;
-    });
-    _getSemesterScore();
+    Helper.instance.getSemester(
+      callback: GeneralCallback<SemesterData>(
+        onFailure: null,
+        onError: null,
+        onSuccess: (data) {
+          setState(() {
+            semesterData = data;
+          });
+          _getSemesterScore();
+        },
+      ),
+    );
   }
 
   _getSemesterScore() async {
-    String rawString = await rootBundle.loadString(FileAssets.scores);
-    scoreData = ScoreData.fromRawJson(rawString);
-    if (mounted)
-      setState(() {
-        if (scoreData == null) {
-          state = ScoreState.empty;
-        } else {
-          state = ScoreState.finish;
-        }
-      });
+    Helper.instance.getScores(
+      semester: semesterData.currentSemester,
+      callback: GeneralCallback(
+        onSuccess: (ScoreData data) {
+          if (mounted)
+            setState(() {
+              scoreData = data;
+              isOffline = false;
+              // courseData.save(semesterData.currentSemester.cacheSaveTag);
+              state = ScoreState.finish;
+            });
+        },
+        onFailure: (DioError e) async {
+          setState(() {
+            state = ScoreState.custom;
+            customStateHint = ApLocalizations.dioError(context, e);
+          });
+        },
+        onError: (GeneralResponse generalResponse) async {
+          setState(() {
+            state = ScoreState.custom;
+            customStateHint = ap.unknownError;
+          });
+        },
+      ),
+    );
   }
 
 //  Future<bool> _loadOfflineScoreData() async {
