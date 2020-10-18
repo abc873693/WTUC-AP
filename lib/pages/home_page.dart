@@ -16,6 +16,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wtuc_ap/api/api_status_code.dart';
+import 'package:wtuc_ap/api/helper.dart';
 
 import '../config/constants.dart';
 import '../res/assets.dart';
@@ -337,7 +339,45 @@ class HomePageState extends State<HomePage> {
     await Future.delayed(Duration(microseconds: 30));
     var username = Preferences.getString(Constants.PREF_USERNAME, '');
     var password = Preferences.getStringSecurity(Constants.PREF_PASSWORD, '');
-    //to login
+    Helper.instance.login(
+      username: username,
+      password: password,
+      callback: GeneralCallback<GeneralResponse>(
+        onSuccess: (GeneralResponse response) async {
+          isLogin = true;
+          Preferences.setBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
+          _getUserInfo();
+          if (state != HomeState.finish) {
+            _getAnnouncements();
+          }
+          _homeKey.currentState.showBasicHint(text: ap.loginSuccess);
+        },
+        onFailure: (DioError e) {
+          final text = ApLocalizations.dioError(context, e);
+          _homeKey.currentState.showSnackBar(
+            text: text,
+            actionText: ap.retry,
+            onSnackBarTapped: _login,
+          );
+        },
+        onError: (GeneralResponse response) {
+          String message = '';
+          switch (response.statusCode) {
+            case ApiStatusCode.LOGIN_FAIL:
+              message = ap.loginFail;
+              break;
+            default:
+              message = ap.somethingError;
+              break;
+          }
+          _homeKey.currentState.showSnackBar(
+            text: message,
+            actionText: ap.retry,
+            onSnackBarTapped: _login,
+          );
+        },
+      ),
+    );
     isLogin = true;
     Preferences.setBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
     _getUserInfo();

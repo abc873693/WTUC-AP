@@ -9,6 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wtuc_ap/api/api_status_code.dart';
+import 'package:wtuc_ap/api/helper.dart';
 
 import '../config/constants.dart';
 import '../res/assets.dart';
@@ -174,14 +176,41 @@ class LoginPageState extends State<LoginPage> {
         barrierDismissible: false,
       );
       Preferences.setString(Constants.PREF_USERNAME, _username.text);
-      Navigator.of(context, rootNavigator: true).pop();
-      Preferences.setString(Constants.PREF_USERNAME, _username.text);
-      if (isRememberPassword) {
-        Preferences.setStringSecurity(Constants.PREF_PASSWORD, _password.text);
-      }
-      Preferences.setBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
-      TextInput.finishAutofillContext();
-      Navigator.of(context).pop(true);
+      Helper.instance.login(
+        username: _username.text,
+        password: _password.text,
+        callback: GeneralCallback<GeneralResponse>(
+          onSuccess: (GeneralResponse response) async {
+            Navigator.of(context, rootNavigator: true).pop();
+            Preferences.setString(Constants.PREF_USERNAME, _username.text);
+            if (isRememberPassword) {
+              Preferences.setStringSecurity(
+                  Constants.PREF_PASSWORD, _password.text);
+            }
+            Preferences.setBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
+            TextInput.finishAutofillContext();
+            Navigator.of(context).pop(true);
+          },
+          onFailure: (DioError e) {
+            Navigator.of(context, rootNavigator: true).pop();
+            ApUtils.handleDioError(context, e, gravity: gravity);
+            if (e.type != DioErrorType.CANCEL) _offlineLogin();
+          },
+          onError: (GeneralResponse response) {
+            Navigator.of(context, rootNavigator: true).pop();
+            String message = '';
+            switch (response.statusCode) {
+              case ApiStatusCode.LOGIN_FAIL:
+                message = ap.loginFail;
+                break;
+              default:
+                message = ap.somethingError;
+                break;
+            }
+            ApUtils.showToast(context, message);
+          },
+        ),
+      );
     }
   }
 
