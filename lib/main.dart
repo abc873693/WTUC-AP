@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:ap_common/resources/ap_icon.dart';
 import 'package:ap_common/utils/preferences.dart';
+import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,5 +16,6 @@ void main() async {
   await Preferences.init(key: Constants.key, iv: Constants.iv);
   ApIcon.code =
       Preferences.getString(Constants.PREF_ICON_STYLE_CODE, ApIcon.OUTLINED);
+  if (FirebaseUtils.isSupportCore) await Firebase.initializeApp();
   runApp(MyApp());
 }
