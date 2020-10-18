@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/notification_data.dart';
 import 'package:ap_common/models/phone_model.dart';
@@ -9,10 +7,11 @@ import 'package:ap_common/resources/ap_icon.dart';
 import 'package:ap_common/resources/ap_theme.dart';
 import 'package:ap_common/scaffold/pdf_scaffold.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
+import 'package:ap_common/utils/preferences.dart';
+import 'package:ap_common_firebase/utils/firebase_remote_config_utils.dart';
+import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import '../res/assets.dart';
+import 'package:wtuc_ap/config/constants.dart';
 
 class SchoolInfoPage extends StatefulWidget {
   static const String routerName = "/ShcoolInfo";
@@ -73,11 +72,13 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
 
   int _currentIndex = 0;
 
+  static const DEFAULT_SCHEDULE =
+      'https://a001.wzu.edu.tw/datas/upload/files/%E8%A1%8C%E4%BA%8B%E6%9B%86/109/109%E9%80%B2%E4%BF%AE%E9%83%A8%E9%83%A8%E8%A1%8C%E4%BA%8B%E6%9B%86_1090930%E4%BF%AE%E6%AD%A3%E7%89%88_.pdf';
+
   @override
   void initState() {
 //    FirebaseAnalyticsUtils.instance.setCurrentScreen("SchoolInfoPage", "school_info_page.dart");
-    controller = TabController(length: 3, vsync: this);
-    _getNotifications();
+    controller = TabController(length: 2, vsync: this);
     _getSchedules();
     super.initState();
   }
@@ -98,20 +99,6 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
       ),
       body: TabBarView(
         children: [
-          NotificationScaffold(
-            state: notificationState,
-            notificationList: notificationList,
-            onRefresh: () {
-              setState(() {
-                notificationList.clear();
-              });
-              _getNotifications();
-            },
-            onLoadingMore: () {
-              setState(() => notificationState = NotificationState.loadingMore);
-              _getNotifications();
-            },
-          ),
           PhoneScaffold(
             state: phoneState,
             phoneModelList: phoneModelList,
@@ -136,10 +123,6 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
         fixedColor: ApTheme.of(context).yellow,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(ApIcon.fiberNew),
-            title: Text(ap.notifications),
-          ),
-          BottomNavigationBarItem(
             icon: Icon(ApIcon.phone),
             title: Text(ap.phones),
           ),
@@ -152,19 +135,28 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
     );
   }
 
-  _getNotifications() async {
-    String rawString = await rootBundle.loadString(FileAssets.notifications);
-    var data = NotificationsData.fromRawJson(rawString);
-    if (mounted && data != null)
-      setState(() {
-        notificationList.addAll(data.data.notifications);
-        notificationState = NotificationState.finish;
-      });
-  }
-
   _getSchedules() async {
-    downloadFdf(
-        'https://raw.githubusercontent.com/NKUST-ITC/NKUST-AP-Flutter/master/school_schedule.pdf');
+    String pdfUrl;
+    if (FirebaseUtils.isSupportRemoteConfig) {
+      try {
+        final RemoteConfig remoteConfig = await RemoteConfig.instance;
+        await remoteConfig.fetch(expiration: const Duration(hours: 1));
+        await remoteConfig.activateFetched();
+        pdfUrl = remoteConfig.getString(Constants.SCHEDULE_PDF_URL);
+        if (pdfUrl != null && pdfUrl.isNotEmpty) {
+          Preferences.setString(Constants.SCHEDULE_PDF_URL, pdfUrl);
+        } else
+          pdfUrl = Preferences.getString(
+              Constants.SCHEDULE_PDF_URL, DEFAULT_SCHEDULE);
+      } catch (exception) {
+        pdfUrl =
+            Preferences.getString(Constants.SCHEDULE_PDF_URL, DEFAULT_SCHEDULE);
+      }
+    } else {
+      pdfUrl =
+          Preferences.getString(Constants.SCHEDULE_PDF_URL, DEFAULT_SCHEDULE);
+    }
+    downloadFdf(pdfUrl);
   }
 
   void downloadFdf(String url) async {
