@@ -101,10 +101,10 @@ class LoginPageState extends State<LoginPage> {
             _login();
           },
         ),
-        ApFlatButton(
-          text: ap.offlineLogin,
-          onPressed: _offlineLogin,
-        ),
+        // ApFlatButton(
+        //   text: ap.offlineLogin,
+        //   onPressed: _offlineLogin,
+        // ),
 //        ApFlatButton(
 //          text: ap.searchUsername,
 //          onPressed: () async {
