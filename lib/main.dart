@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ap_common/resources/ap_icon.dart';
@@ -17,5 +18,13 @@ void main() async {
   ApIcon.code =
       Preferences.getString(Constants.PREF_ICON_STYLE_CODE, ApIcon.OUTLINED);
   if (FirebaseUtils.isSupportCore) await Firebase.initializeApp();
-  runApp(MyApp());
+  if (FirebaseUtils.isSupportCrashlytics) {
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    runZonedGuarded(() {
+      runApp(MyApp());
+    }, (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    });
+  } else
+    runApp(MyApp());
 }
