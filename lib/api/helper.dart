@@ -11,6 +11,7 @@ import 'package:ap_common/models/user_info.dart';
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/wtuc_helper.dart';
 export 'package:ap_common/callback/general_callback.dart';
 
@@ -31,34 +32,30 @@ class Helper {
     return _instance;
   }
 
-  Future<bool> login({
+  Future<GeneralResponse> login({
     @required String username,
     @required String password,
-    GeneralCallback<bool> callback,
+    GeneralCallback<GeneralResponse> callback,
   }) async {
     try {
       var loginResponse = await WebApHelper.instance.wzuApLogin(
         username: username,
         password: password,
       );
-      if (!loginResponse) {
-        throw GeneralResponse(statusCode: 401, message: "Login fail.");
-      }
       Helper.username = username;
       Helper.password = password;
       if (callback != null)
-        return callback.onSuccess(loginResponse);
+        return callback.onSuccess(GeneralResponse.success());
       else
-        return loginResponse;
+        return GeneralResponse.success();
     } on GeneralResponse catch (response) {
       callback?.onError(response);
     } on DioError catch (e) {
       callback?.onFailure(e);
-    } catch (e) {
-      callback?.onError(
-        GeneralResponse.unknownError(),
-      );
-      throw e;
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
     }
     return null;
   }

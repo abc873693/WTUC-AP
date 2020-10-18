@@ -16,6 +16,7 @@ import 'package:ap_common/models/score_data.dart';
 // callback
 import 'package:ap_common/callback/general_callback.dart';
 
+import 'api_status_code.dart';
 import 'helper.dart';
 
 class WebApHelper {
@@ -142,7 +143,10 @@ class WebApHelper {
     Response login_check_request = await dio.get(
         "https://info.wzu.edu.tw/wtuc/portalleft.jsp?sys_name=web&sys_kind=01");
     if (login_check_request.data.substring(0, 1000).indexOf("alert(") > -1) {
-      return false;
+      throw GeneralResponse(
+        statusCode: ApiStatusCode.LOGIN_FAIL,
+        message: "Login fail.",
+      );
     }
     infoIsLogin = true;
     return true;
