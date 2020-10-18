@@ -65,7 +65,8 @@ class Helper {
   }) async {
     try {
       var data = await WebApHelper.instance.wtucSemesters();
-
+      data.data = data.data.reversed.toList();
+      data.currentIndex = data.defaultIndex;
       return (callback == null) ? data : callback.onSuccess(data);
     } on DioError catch (dioError) {
       callback?.onFailure(dioError);
