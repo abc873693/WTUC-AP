@@ -5,7 +5,6 @@ import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/course_data.dart';
 import 'package:ap_common/models/score_data.dart';
 
-/// TODO: Select senesterData use by local model or ap_common.
 import 'package:ap_common/models/semester_data.dart';
 import 'package:ap_common/models/user_info.dart';
 
