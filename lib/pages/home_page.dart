@@ -12,7 +12,7 @@ import 'package:ap_common/utils/ap_utils.dart';
 import 'package:ap_common/utils/dialog_utils.dart';
 import 'package:ap_common/utils/preferences.dart';
 import 'package:ap_common/widgets/ap_drawer.dart';
-import 'package:flutter/services.dart';
+import 'package:ap_common_firebase/utils/firebase_analytics_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -300,11 +300,23 @@ class HomePageState extends State<HomePage> {
   }
 
   _getUserInfo() async {
-    String rawString = await rootBundle.loadString(FileAssets.userInfo);
-    var userInfo = UserInfo.fromRawJson(rawString);
-    setState(() {
-      this.userInfo = userInfo;
-    });
+    Helper.instance.getUsersInfo(
+      callback: GeneralCallback(
+        onSuccess: (UserInfo data) {
+          if (mounted) {
+            setState(() {
+              this.userInfo = data;
+            });
+            FirebaseAnalyticsUtils.instance.logUserInfo(userInfo);
+            userInfo.save(Helper.username);
+            if (Preferences.getBool(Constants.PREF_DISPLAY_PICTURE, true))
+              _getUserPicture();
+          }
+        },
+        onFailure: (DioError e) {},
+        onError: (GeneralResponse e) => null,
+      ),
+    );
     if (Preferences.getBool(Constants.PREF_DISPLAY_PICTURE, true))
       _getUserPicture();
   }
