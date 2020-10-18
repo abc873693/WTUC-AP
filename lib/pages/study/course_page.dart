@@ -5,10 +5,9 @@ import 'package:ap_common/scaffold/course_scaffold.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
 import 'package:ap_common/utils/preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:wtuc_ap/api/helper.dart';
 
 import '../../config/constants.dart';
-import '../../res/assets.dart';
 
 class CoursePage extends StatefulWidget {
   static const String routerName = '/course';
@@ -62,7 +61,10 @@ class CoursePageState extends State<CoursePage> {
       androidResourceIcon: Constants.ANDROID_DEFAULT_NOTIFICATION_NAME,
       semesterData: semesterData,
       onSelect: (index) {
-        semesterData.currentIndex = index;
+        setState(() {
+          state = CourseState.loading;
+          semesterData.currentIndex = index;
+        });
         _getCourseTables();
       },
       onRefresh: () async {
@@ -88,27 +90,47 @@ class CoursePageState extends State<CoursePage> {
   }
 
   void _getSemester() async {
-    String rawString = await rootBundle.loadString(FileAssets.semesters);
-    semesterData = SemesterData.fromRawJson(rawString);
-    var i = 0;
-    if(semesterData.defaultSemester!=null)
-    semesterData.data.forEach((option) {
-      if (option.text == semesterData.defaultSemester.text) semesterData.currentIndex = i;
-      i++;
-    });
-    _getCourseTables();
+    Helper.instance.getSemester(
+      callback: GeneralCallback<SemesterData>(
+        onFailure: null,
+        onError: null,
+        onSuccess: (data) {
+          setState(() {
+            semesterData = data;
+          });
+          _getCourseTables();
+        },
+      ),
+    );
   }
 
   _getCourseTables() async {
-    String rawString = await rootBundle.loadString(FileAssets.courses);
-    courseData = CourseData.fromRawJson(rawString);
-    courseData.updateIndex();
-    if (mounted && courseData != null)
-      setState(() {
-        if (courseData?.courseTables == null)
-          state = CourseState.empty;
-        else
-          state = CourseState.finish;
-      });
+    Helper.instance.getCourseTables(
+      semester: semesterData.currentSemester,
+      callback: GeneralCallback(
+        onSuccess: (CourseData data) {
+          if (mounted)
+            setState(() {
+              courseData = data;
+              isOffline = false;
+              // courseData.save(semesterData.currentSemester.cacheSaveTag);
+              state = CourseState.finish;
+              notifyData = CourseNotifyData.load(courseNotifyCacheKey);
+            });
+        },
+        onFailure: (DioError e) async {
+          setState(() {
+            state = CourseState.custom;
+            customStateHint = ApLocalizations.dioError(context, e);
+          });
+        },
+        onError: (GeneralResponse generalResponse) async {
+          setState(() {
+            state = CourseState.custom;
+            customStateHint = ap.unknownError;
+          });
+        },
+      ),
+    );
   }
 }
