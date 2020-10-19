@@ -56,15 +56,15 @@ class Constants {
   static const TAG_NEWS_ICON = "tag_news_icon";
   static const TAG_NEWS_TITLE = "tag_news_title";
 
-  static const ANDROID_DEFAULT_NOTIFICATION_NAME = '@drawable/ic_stat_kuas_ap';
+  static const ANDROID_DEFAULT_NOTIFICATION_NAME = '@drawable/ic_stat_name';
 
   // Notification ID
   static const int NOTIFICATION_BUS_ID = 100;
   static const int NOTIFICATION_COURSE_ID = 101;
   static const int NOTIFICATION_FCM_ID = 200;
 
-  static const FANS_PAGE_ID = '954175941266264';
+  static const FANS_PAGE_ID = '102991398269377';
   static const PLAY_STORE_URL =
-      'https://play.google.com/store/apps/details?id=com.kuas.ap&hl=zh_TW';
+      'https://play.google.com/store/apps/details?id=com.mtuc.ap&hl=zh_TW';
 
 }
