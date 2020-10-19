@@ -490,12 +490,11 @@ class HomePageState extends State<HomePage> {
       if (versionInfo != null)
         DialogUtils.showNewVersionContent(
           context: context,
-          iOSAppId: '146752219',
+          iOSAppId: '1536450161',
           defaultUrl: 'https://www.facebook.com/NKUST.ITC/',
           appName: app.appName,
           versionInfo: versionInfo,
         );
-      //TODO fix iOS app id
     }
   }
 }
