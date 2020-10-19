@@ -18,6 +18,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
+import 'package:wtuc_ap/pages/school_map_page.dart';
 
 import '../config/constants.dart';
 import '../res/assets.dart';
@@ -188,6 +189,13 @@ class HomePageState extends State<HomePage> {
 //                page: RoomListPage(),
 //              ),
             ],
+          ),
+          DrawerItem(
+            icon: ApIcon.map,
+            title: ap.schoolMap,
+            onTap: () => _openPage(
+              SchoolMapPage(),
+            ),
           ),
           DrawerItem(
             icon: ApIcon.info,
