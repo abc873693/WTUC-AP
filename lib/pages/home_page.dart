@@ -275,8 +275,8 @@ class HomePageState extends State<HomePage> {
   _getAnnouncements() async {
     GitHubHelper.instance.getAnnouncement(
       gitHubUsername: 'abc873693',
-      hashCode: 'a8e048d24f892ce95a633aa5966c030a',
-      tag: 'nkust',
+      hashCode: 'e1ea5bda328ef8ffa01334c0da6d62b9',
+      tag: 'wtuc',
       callback: GeneralCallback(
         onFailure: (_) => setState(() => state = HomeState.error),
         onError: (_) => setState(() => state = HomeState.error),
