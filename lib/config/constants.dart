@@ -2,8 +2,8 @@ import 'package:encrypt/encrypt.dart';
 
 class Constants {
 
-  static final key = Key.fromUtf8('l9r1W3wcsnJTayxCXwoFt62w1i4sQ5J9');
-  static final iv = IV.fromUtf8('auc9OV5r0nLwjCAH');
+  static final key = Key.fromUtf8('B75yeYCdolcMfMCpY75QCEyOs2cBKEgM');
+  static final iv = IV.fromUtf8('wNWl2hLeSULAHdoe');
 
   static const PREF_FIRST_ENTER_APP = "pref_first_enter_app";
   static const PREF_CURRENT_VERSION = "pref_current_version";
