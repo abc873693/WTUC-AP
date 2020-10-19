@@ -13,12 +13,16 @@ import 'package:ap_common/utils/dialog_utils.dart';
 import 'package:ap_common/utils/preferences.dart';
 import 'package:ap_common/widgets/ap_drawer.dart';
 import 'package:ap_common_firebase/utils/firebase_analytics_utils.dart';
+import 'package:ap_common_firebase/utils/firebase_remote_config_utils.dart';
+import 'package:ap_common_firebase/utils/firebase_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
 import 'package:wtuc_ap/pages/school_map_page.dart';
+import 'package:package_info/package_info.dart';
 
 import '../config/constants.dart';
 import '../res/assets.dart';
@@ -103,6 +107,9 @@ class HomePageState extends State<HomePage> {
       _login();
     } else {
       checkLogin();
+    }
+    if (FirebaseUtils.isSupportRemoteConfig) {
+      _checkUpdate();
     }
     super.initState();
   }
@@ -457,6 +464,38 @@ class HomePageState extends State<HomePage> {
         setState(() => content = page);
       } else
         ApUtils.pushCupertinoStyle(context, page);
+    }
+  }
+
+  _checkUpdate() async {
+    if (kIsWeb) return;
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    await Future.delayed(Duration(milliseconds: 50));
+    var currentVersion =
+    Preferences.getString(Constants.PREF_CURRENT_VERSION, '');
+    if (currentVersion != packageInfo.buildNumber) {
+      DialogUtils.showUpdateContent(
+        context,
+        "v${packageInfo.version}\n"
+            "${app.updateNoteContent}",
+      );
+      Preferences.setString(
+        Constants.PREF_CURRENT_VERSION,
+        packageInfo.buildNumber,
+      );
+    }
+    if (!kDebugMode) {
+      VersionInfo versionInfo =
+      await FirebaseRemoteConfigUtils.getVersionInfo();
+      if (versionInfo != null)
+        DialogUtils.showNewVersionContent(
+          context: context,
+          iOSAppId: '146752219',
+          defaultUrl: 'https://www.facebook.com/NKUST.ITC/',
+          appName: app.appName,
+          versionInfo: versionInfo,
+        );
+      //TODO fix iOS app id
     }
   }
 }
