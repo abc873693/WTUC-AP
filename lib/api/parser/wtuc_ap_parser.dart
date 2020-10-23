@@ -316,14 +316,14 @@ Map<String, dynamic> wtucScoresParser(String html) {
       var td = table[scoresIndex].getElementsByTagName('td');
       data['scores'].add({
         "title": td[1].text,
-        'units': td[2].text,
-        'hours': td[3].text,
+        'units': td[3].text,
+        'hours': "",
         'required': "",
-        'at': "",
+        'at': td[3].text,
         'middleScore': td[5].text,
         'generalScore': td[4].text,
         'finalScore': td[6].text,
-        'totalScore': td[10].text,
+        'semesterScore': td[10].text,
         'remark': "",
       });
     }
