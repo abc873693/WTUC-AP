@@ -2,8 +2,10 @@ import 'package:ap_common/models/score_data.dart';
 import 'package:ap_common/models/semester_data.dart';
 import 'package:ap_common/scaffold/score_scaffold.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
+import 'package:ap_common/utils/dialog_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:wtuc_ap/api/helper.dart';
+import 'package:wtuc_ap/utils/app_localizations.dart';
 
 class ScorePage extends StatefulWidget {
   static const String routerName = '/score';
@@ -42,12 +44,29 @@ class ScorePageState extends State<ScorePage> {
     return ScoreScaffold(
       state: state,
       scoreData: scoreData,
-      customHint: isOffline ? ap.offlineScore : '',
+      customHint: "${isOffline ? "${ap.offlineScore}\n" : ""}"
+          "${AppLocalizations.of(context).scoreClickHint}",
       customStateHint: customStateHint,
       semesterData: semesterData,
       onSelect: (index) {
         this.semesterData.currentIndex = index;
         _getSemesterScore();
+      },
+      onScoreSelect: (index) {
+        final score = scoreData.scores[index];
+        DialogUtils.showDefault(
+          context: context,
+          title: score.title,
+          content: "${ap.generalScore}：${score.generalScore}\n"
+              "${ap.midtermScore}：${score.middleScore}\n"
+              "${ap.finalScore}：${score.finalScore}",
+        );
+      },
+      middleTitle: ap.credits,
+      middleScoreBuilder: (index) {
+        return Center(
+          child: Text(scoreData.scores[index].units),
+        );
       },
       onRefresh: () async {
         await _getSemesterScore();
