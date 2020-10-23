@@ -236,14 +236,7 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
       }
       //
       _temp['${key}_${eachDay[eachIndex]['title']}}'] = {
-        'code': "",
         'title': eachDay[eachIndex]['title'],
-        'className': "",
-        'group': "",
-        'units': "",
-        'hours': "",
-        'required': "",
-        'at': "",
         'times': "${dayNameConvert[keyName[key]]} 第${eachIndex}節 ",
         "instructors": eachDay[eachIndex]['instructors'],
         'location': eachDay[eachIndex]['location']
