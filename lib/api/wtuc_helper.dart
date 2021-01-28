@@ -1,4 +1,6 @@
 //dio
+import 'dart:typed_data';
+
 import 'package:ap_common/models/semester_data.dart';
 import 'package:ap_common/models/user_info.dart';
 import 'package:dio/adapter.dart';
@@ -8,6 +10,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:html/parser.dart';
 import 'package:wtuc_ap/api/private_cookie_manager.dart';
 import 'package:wtuc_ap/api/parser/wtuc_ap_parser.dart';
 import 'package:ap_common/models/course_data.dart';
@@ -15,6 +18,7 @@ import 'package:ap_common/models/score_data.dart';
 
 // callback
 import 'package:ap_common/callback/general_callback.dart';
+import 'package:wtuc_ap/models/teaching_evaluation.dart';
 
 import 'api_status_code.dart';
 import 'helper.dart';
@@ -31,6 +35,7 @@ class WebApHelper {
   bool ssoIsLogin = false;
   bool infoIsLogin = false;
   static String ssoHost = "https://sso.wzu.edu.tw";
+
   //cache key name
   static String get semesterCacheKey => "semesterCacheKey";
 
@@ -167,6 +172,7 @@ class WebApHelper {
     } else {
       url = otherUrl;
     }
+    print(url);
     Options _options;
     dynamic requestData;
     if (cacheKey == null) {
@@ -313,5 +319,121 @@ class WebApHelper {
     return UserInfo.fromJson(
       parsedData,
     );
+  }
+
+  Future<List<TeachingEvaluation>> wtucTeachingEvaluation() async {
+    List<TeachingEvaluation> data = [];
+    var query =
+        await dio.post('https://info.wzu.edu.tw/wtuc/bg_pro/bg052_00.jsp');
+    var html = query.data;
+    if (html is Uint8List) {
+      html = clearTransEncoding(html);
+    }
+    var document = parse(html);
+    var trs = document.getElementsByTagName('tr');
+    for (var tr in trs) {
+      if (tr.id != null && tr.id.contains('tr')) {
+        var tds = tr.getElementsByTagName('td');
+        print('${tr.id} ${tr.text} ${tr.attributes['onclick'].split('\'')[1]}');
+        data.add(
+          TeachingEvaluation(
+            title: tds[0].text,
+            instructor: tds[5].text,
+            state: tds[6].text,
+            isFinish:
+                tds[6].getElementsByTagName('font').first.attributes['color'] ==
+                    "blue",
+            id: tr.attributes['onclick'].split('\'')[1],
+          ),
+        );
+      }
+    }
+    return data;
+  }
+
+  Future<void> sendTeachingEvaluation(
+      TeachingEvaluation teachingEvaluation) async {
+    print('id = ${teachingEvaluation.id}');
+    dio.options.headers["Content-Type"] = "application/x-www-form-urlencoded";
+    var tmp = await dio.post(
+      'https://info.wzu.edu.tw/wtuc/bg_pro/bg052_01.jsp',
+      data: {
+        'arg': teachingEvaluation.id,
+      },
+      options: Options(
+        followRedirects: false,
+        contentType: Headers.formUrlEncodedContentType,
+      ),
+    );
+    dio.options.headers["Content-Type"] = "application/x-www-form-urlencoded";
+    var query = await dio.post(
+      'https://info.wzu.edu.tw/wtuc/bg_pro/bg052_ins.jsp',
+      options: Options(
+        followRedirects: false,
+        contentType: Headers.formUrlEncodedContentType,
+      ),
+      data: {
+        "yradio1": "on",
+        "hyvalue1": "23#0#N#Y#N#N#N#N#5#",
+        "yradio2": "on",
+        "hyvalue2": "24#0#N#Y#N#N#N#N#5#",
+        "yradio3": "on",
+        "hyvalue3": "26#0#N#Y#N#N#N#N#5#",
+        "yradio4": "on",
+        "hyvalue4": "27#0#N#Y#N#N#N#N#5#",
+        "yradio5": "on",
+        "hyvalue5": "29#0#N#Y#N#N#N#N#5#",
+        "yradio6": "on",
+        "hyvalue6": "31#0#N#Y#N#N#N#N#5#",
+        "yradio7": "on",
+        "hyvalue7": "32#0#N#Y#N#N#N#N#5#",
+        "yradio8": "on",
+        "hyvalue8": "33#0#N#Y#N#N#N#N#5#",
+        "yradio9": "on",
+        "hyvalue9": "34#0#N#Y#N#N#N#N#5#",
+        "yradio10": "on",
+        "hyvalue10": "35#0#N#Y#N#N#N#N#5#",
+        "yradio11": "on",
+        "hyvalue11": "36#0#N#Y#N#N#N#N#5#",
+        "yradio12": "on",
+        "hyvalue12": "38#0#N#Y#N#N#N#N#5#",
+        "yradio13": "on",
+        "hyvalue13": "39#0#N#Y#N#N#N#N#5#",
+        "yradio14": "on",
+        "hyvalue14": "40#0#N#Y#N#N#N#N#5#",
+        "yradio15": "on",
+        "hyvalue15": "41#0#N#Y#N#N#N#N#5#",
+        "yradio16": "on",
+        "hyvalue16": "43#0#N#Y#N#N#N#N#5#",
+        "yradio17": "on",
+        "hyvalue17": "44#0#N#Y#N#N#N#N#5#",
+        "yradio18": "on",
+        "hyvalue18": "45#0#N#Y#N#N#N#N#5#",
+        'yradio19': "on",
+        "hyvalue19": "46#0#N#Y#N#N#N#N#5#",
+        "yradio20": "on",
+        "hyvalue20": "52#0#N#N#N#N#N#Y#1#",
+        "yradio21": "on",
+        "hyvalue21": "47#0#N#Y#N#N#N#N#5#",
+        "yradio22": "on",
+        "hyvalue22": "48#0#N#Y#N#N#N#N#5#",
+        "yradio23": "on",
+        "hyvalue23": "49#0#N#Y#N#N#N#N#5#",
+        "hquesn1": "51#1#Y#N#N#N#N#N##",
+        "svalue": teachingEvaluation.id,
+        "code_no_y": "23",
+        "code_no_n": "0",
+        "ques_no_y": "0",
+        "ques_no_n": "1",
+        "cho_lang": "C",
+        "content":
+            "23#0#N#Y#N#N#N#N#5#\$24#0#N#Y#N#N#N#N#5#\$26#0#N#Y#N#N#N#N#5#\$27#0#N#Y#N#N#N#N#5#\$29#0#N#Y#N#N#N#N#5#\$31#0#N#Y#N#N#N#N#5#\$32#0#N#Y#N#N#N#N#5#\$33#0#N#Y#N#N#N#N#5#\$34#0#N#Y#N#N#N#N#5#\$35#0#N#Y#N#N#N#N#5#\$36#0#N#Y#N#N#N#N#5#\$38#0#N#Y#N#N#N#N#5#\$39#0#N#Y#N#N#N#N#5#\$40#0#N#Y#N#N#N#N#5#\$41#0#N#Y#N#N#N#N#5#\$43#0#N#Y#N#N#N#N#5#\$44#0#N#Y#N#N#N#N#5#\$45#0#N#Y#N#N#N#N#5#\$46#0#N#Y#N#N#N#N#5#\$52#0#N#N#N#N#N#Y#1#\$47#0#N#Y#N#N#N#N#5#\$48#0#N#Y#N#N#N#N#5#\$49#0#N#Y#N#N#N#N#5#\$51#1#Y#N#N#N#N#N##"
+      },
+    );
+    var html = query.data;
+    if (html is Uint8List) {
+      html = clearTransEncoding(html);
+    }
+    return null;
   }
 }

@@ -13,6 +13,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/wtuc_helper.dart';
+import 'package:wtuc_ap/models/teaching_evaluation.dart';
 export 'package:ap_common/callback/general_callback.dart';
 
 class Helper {
@@ -135,6 +136,47 @@ class Helper {
       );
       if (data != null && data.scores.length == 0) data = null;
       return (callback == null) ? data : callback.onSuccess(data);
+    } on DioError catch (dioError) {
+      callback?.onFailure(dioError);
+      if (callback == null) throw dioError;
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
+    }
+    return null;
+  }
+
+  Future<List<TeachingEvaluation>> getTeachingEvaluation({
+    GeneralCallback<List<TeachingEvaluation>> callback,
+  }) async {
+    try {
+      var data = await WebApHelper.instance.wtucTeachingEvaluation();
+      if (data != null && data.length == 0) data = null;
+      return (callback == null) ? data : callback.onSuccess(data);
+    } on DioError catch (dioError) {
+      callback?.onFailure(dioError);
+      if (callback == null) throw dioError;
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
+    }
+    return null;
+  }
+
+  Future<GeneralResponse> sendTeachingEvaluation({
+    List<TeachingEvaluation> teachingEvaluations,
+    GeneralCallback<GeneralResponse> callback,
+  }) async {
+    try {
+      for (var teachingEvaluation in teachingEvaluations) {
+        var data = await WebApHelper.instance
+            .sendTeachingEvaluation(teachingEvaluation);
+      }
+      return (callback == null)
+          ? GeneralResponse.success()
+          : callback.onSuccess(GeneralResponse.success());
     } on DioError catch (dioError) {
       callback?.onFailure(dioError);
       if (callback == null) throw dioError;

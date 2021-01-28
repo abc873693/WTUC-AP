@@ -23,6 +23,7 @@ import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
 import 'package:wtuc_ap/pages/school_map_page.dart';
 import 'package:package_info/package_info.dart';
+import 'package:wtuc_ap/pages/study/teaching_evaluation_page.dart';
 
 import '../config/constants.dart';
 import '../res/assets.dart';
@@ -202,6 +203,14 @@ class HomePageState extends State<HomePage> {
             title: ap.schoolMap,
             onTap: () => _openPage(
               SchoolMapPage(),
+            ),
+          ),
+          DrawerItem(
+            icon: ApIcon.person,
+            title: app.teachingEvaluation,
+            onTap: () => _openPage(
+              TeachingEvaluationPage(),
+              needLogin: true,
             ),
           ),
           DrawerItem(
@@ -472,12 +481,12 @@ class HomePageState extends State<HomePage> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     await Future.delayed(Duration(milliseconds: 50));
     var currentVersion =
-    Preferences.getString(Constants.PREF_CURRENT_VERSION, '');
+        Preferences.getString(Constants.PREF_CURRENT_VERSION, '');
     if (currentVersion != packageInfo.buildNumber) {
       DialogUtils.showUpdateContent(
         context,
         "v${packageInfo.version}\n"
-            "${app.updateNoteContent}",
+        "${app.updateNoteContent}",
       );
       Preferences.setString(
         Constants.PREF_CURRENT_VERSION,
@@ -486,7 +495,7 @@ class HomePageState extends State<HomePage> {
     }
     if (!kDebugMode) {
       VersionInfo versionInfo =
-      await FirebaseRemoteConfigUtils.getVersionInfo();
+          await FirebaseRemoteConfigUtils.getVersionInfo();
       if (versionInfo != null)
         DialogUtils.showNewVersionContent(
           context: context,
