@@ -66,6 +66,8 @@ class HomePageState extends State<HomePage> {
   bool isBusExpanded = false;
   bool isLeaveExpanded = false;
 
+  bool canUseQuickFillIn = false;
+
   UserInfo userInfo;
 
   TextStyle get _defaultStyle => TextStyle(
@@ -205,14 +207,15 @@ class HomePageState extends State<HomePage> {
               SchoolMapPage(),
             ),
           ),
-          DrawerItem(
-            icon: ApIcon.person,
-            title: app.teachingEvaluation,
-            onTap: () => _openPage(
-              TeachingEvaluationPage(),
-              needLogin: true,
+          if (canUseQuickFillIn && isLogin)
+            DrawerItem(
+              icon: ApIcon.person,
+              title: app.teachingEvaluation,
+              onTap: () => _openPage(
+                TeachingEvaluationPage(),
+                needLogin: true,
+              ),
             ),
-          ),
           DrawerItem(
             icon: ApIcon.info,
             title: ap.schoolInfo,
@@ -243,6 +246,7 @@ class HomePageState extends State<HomePage> {
                 isLogin = false;
                 userInfo = null;
                 content = null;
+                canUseQuickFillIn = false;
                 if (!isTablet) Navigator.of(context).pop();
                 checkLogin();
               },
@@ -326,12 +330,13 @@ class HomePageState extends State<HomePage> {
   _getUserInfo() async {
     Helper.instance.getUsersInfo(
       callback: GeneralCallback(
-        onSuccess: (UserInfo data) {
+        onSuccess: (UserInfo data) async {
           if (mounted) {
             setState(() {
               this.userInfo = data;
             });
-            FirebaseAnalyticsUtils.instance.logUserInfo(userInfo);
+            await FirebaseAnalyticsUtils.instance.logUserInfo(userInfo);
+            _checkCanUseQuickFillIn();
             userInfo.save(Helper.username);
             if (Preferences.getBool(Constants.PREF_DISPLAY_PICTURE, true))
               _getUserPicture();
@@ -417,6 +422,7 @@ class HomePageState extends State<HomePage> {
     isLogin = true;
     Preferences.setBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
     _getUserInfo();
+    _checkCanUseQuickFillIn();
     if (state != HomeState.finish) {
       _getAnnouncements();
     }
@@ -432,6 +438,7 @@ class HomePageState extends State<HomePage> {
     checkLogin();
     if (result ?? false) {
       _getUserInfo();
+      _checkCanUseQuickFillIn();
       if (state != HomeState.finish) {
         _getAnnouncements();
       }
@@ -504,6 +511,17 @@ class HomePageState extends State<HomePage> {
           appName: app.appName,
           versionInfo: versionInfo,
         );
+    }
+  }
+
+  _checkCanUseQuickFillIn() async {
+    if (FirebaseUtils.isSupportRemoteConfig) {
+      final config = await RemoteConfig.instance;
+      setState(() {
+        canUseQuickFillIn =
+            config.getBool(Constants.QUICK_FILL_IN_TEACHING_EVALUATION);
+        print(canUseQuickFillIn);
+      });
     }
   }
 }

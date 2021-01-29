@@ -1,7 +1,6 @@
 import 'package:encrypt/encrypt.dart';
 
 class Constants {
-
   static final key = Key.fromUtf8('B75yeYCdolcMfMCpY75QCEyOs2cBKEgM');
   static final iv = IV.fromUtf8('wNWl2hLeSULAHdoe');
 
@@ -50,6 +49,8 @@ class Constants {
   static const NEW_VERSION_CONTENT_EN = "new_version_content_en";
   static const API_HOST = 'api_host';
   static const LEAVE_CAMPUS_DATA = 'leave_campus_data';
+  static const QUICK_FILL_IN_TEACHING_EVALUATION =
+      "quick_fill_in_teaching_evaluation";
 
   static const TAG_STUDENT_PICTURE = "tag_student_picture";
   static const TAG_NEWS_PICTURE = "tag_news_picture";
@@ -66,5 +67,4 @@ class Constants {
   static const FANS_PAGE_ID = '102991398269377';
   static const PLAY_STORE_URL =
       'https://play.google.com/store/apps/details?id=com.mtuc.ap&hl=zh_TW';
-
 }
