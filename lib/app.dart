@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:ap_common/config/analytics_constants.dart';
 import 'package:ap_common/pages/about_us_page.dart';
 import 'package:ap_common/pages/open_source_page.dart';
 import 'package:ap_common/resources/ap_icon.dart';
 import 'package:ap_common/resources/ap_theme.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
 import 'package:ap_common/utils/preferences.dart';
-import 'package:ap_common_firebase/constants/fiirebase_constants.dart';
 import 'package:ap_common_firebase/utils/firebase_analytics_utils.dart';
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,7 +51,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
         .values[Preferences.getInt(Constants.PREF_THEME_MODE_INDEX, 0)];
     FirebaseAnalyticsUtils.instance.logThemeEvent(themeMode);
     FirebaseAnalyticsUtils.instance
-        .setUserProperty(FirebaseConstants.ICON_STYLE, ApIcon.code);
+        .setUserProperty(AnalyticsConstants.ICON_STYLE, ApIcon.code);
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
