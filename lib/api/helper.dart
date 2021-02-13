@@ -91,9 +91,6 @@ class Helper {
     );
 
     try {
-      if (data != null && data.courses != null && data.courses.length != 0) {
-        data.updateIndex();
-      }
       return (callback == null) ? data : callback.onSuccess(data);
     } on DioError catch (dioError) {
       callback?.onFailure(dioError);
