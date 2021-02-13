@@ -234,9 +234,11 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
     for (int timeCodeIndex = 0;
         timeCodeIndex < weekdayCourses.length;
         timeCodeIndex++) {
-      final courseTitle = weekdayCourses[timeCodeIndex]['title'];
-      if (_temp[courseTitle] != null) {
-        _temp[courseTitle]['sectionTimes'].add({
+      final title = weekdayCourses[timeCodeIndex]['title'];
+      final location = weekdayCourses[timeCodeIndex]['location'];
+      final key = '${title}_$location';
+      if (_temp[key] != null) {
+        _temp[key]['sectionTimes'].add({
           "index": timeCodeIndex,
           "weekday": i + 1,
         });
@@ -244,8 +246,8 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
         continue;
       }
       //
-      _temp[courseTitle] = {
-        'title': courseTitle,
+      _temp[key] = {
+        'title': title,
         'sectionTimes': [
           {
             "index": timeCodeIndex,
