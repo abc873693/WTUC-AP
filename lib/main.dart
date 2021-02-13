@@ -18,7 +18,7 @@ void main() async {
   ApIcon.code =
       Preferences.getString(Constants.PREF_ICON_STYLE_CODE, ApIcon.OUTLINED);
   if (FirebaseUtils.isSupportCore) await Firebase.initializeApp();
-  if (FirebaseUtils.isSupportCrashlytics) {
+  if (kDebugMode && FirebaseUtils.isSupportCrashlytics) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
     runZonedGuarded(() {
       runApp(MyApp());
