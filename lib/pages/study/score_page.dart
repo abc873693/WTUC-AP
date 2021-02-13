@@ -101,7 +101,9 @@ class ScorePageState extends State<ScorePage> {
               scoreData = data;
               isOffline = false;
               // courseData.save(semesterData.currentSemester.cacheSaveTag);
-              state = ScoreState.finish;
+              state = scoreData?.scores == null || scoreData.scores.length == 0
+                  ? ScoreState.empty
+                  : ScoreState.finish;
             });
         },
         onFailure: (DioError e) async {
