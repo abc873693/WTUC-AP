@@ -121,7 +121,7 @@ class CoursePageState extends State<CoursePage> {
         onFailure: (DioError e) async {
           setState(() {
             state = CourseState.custom;
-            customStateHint = ApLocalizations.dioError(context, e);
+            customStateHint = e.i18nMessage;
           });
         },
         onError: (GeneralResponse generalResponse) async {

@@ -107,7 +107,7 @@ class ScorePageState extends State<ScorePage> {
         onFailure: (DioError e) async {
           setState(() {
             state = ScoreState.custom;
-            customStateHint = ApLocalizations.dioError(context, e);
+            customStateHint = e.i18nMessage;
           });
         },
         onError: (GeneralResponse generalResponse) async {
