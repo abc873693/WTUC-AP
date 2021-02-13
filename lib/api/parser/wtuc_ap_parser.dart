@@ -88,16 +88,17 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
 
   Map<String, dynamic> data = {
     "courses": [],
-    "coursetable": {
-      "timeCodes": [],
-      "Monday": [],
-      "Tuesday": [],
-      "Wednesday": [],
-      "Thursday": [],
-      "Friday": [],
-      "Saturday": [],
-      "Sunday": []
-    }
+    "timeCodes": [],
+  };
+  Map<String, dynamic> courseTable = {
+    "timeCodes": [],
+    "Monday": [],
+    "Tuesday": [],
+    "Wednesday": [],
+    "Thursday": [],
+    "Friday": [],
+    "Saturday": [],
+    "Sunday": []
   };
   var document = parse(html);
 
@@ -118,10 +119,22 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
       }
       var _temptext =
           secondTable[i].getElementsByTagName('td')[0].text.replaceAll(" ", "");
-
-      data['coursetable']['timeCodes'].add(_temptext
+      final title = _temptext
           .substring(0, _temptext.length - 9)
-          .replaceAll(String.fromCharCode(160), ""));
+          .replaceAll(String.fromCharCode(160), "")
+          .replaceAll(" ", "");
+      var courseTime = _temptext
+          .substring(_temptext.length - 9)
+          .replaceAll(String.fromCharCode(160), "");
+      data['timeCodes'].add(
+        {
+          "title": title,
+          "startTime":
+              "${courseTime.split('-')[0].substring(0, 2)}:${courseTime.split('-')[0].substring(2, 4)}",
+          "endTime":
+              "${courseTime.split('-')[1].substring(0, 2)}:${courseTime.split('-')[1].substring(2, 4)}",
+        },
+      );
     }
   } catch (e, s) {
     if (!kIsWeb || (Platform.isAndroid || Platform.isIOS))
@@ -132,7 +145,7 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
       );
   }
   //make each day.
-  List keyName = [
+  List weekdays = [
     'Monday',
     'Tuesday',
     'Wednesday',
@@ -141,19 +154,10 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
     'Saturday',
     'Sunday'
   ];
-  Map<String, String> dayNameConvert = {
-    'Monday': '(一)',
-    'Tuesday': '(二)',
-    'Wednesday': '(三)',
-    'Thursday': '(四)',
-    'Friday': '(五)',
-    'Saturday': '(六)',
-    'Sunday': '(日)'
-  };
   try {
-    for (int key = 0; key < keyName.length; key++) {
+    for (int key = 0; key < weekdays.length; key++) {
       for (int eachSession = 1;
-          eachSession < data['coursetable']['timeCodes'].length + 1;
+          eachSession < data['timeCodes'].length + 1;
           eachSession++) {
         if (eachSession == 11) {
           // bypass "night" content td.
@@ -198,7 +202,7 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
               .replaceAll("&nbsp;", '')
               .replaceAll(";", '');
         }
-        data['coursetable'][keyName[key]].add({
+        courseTable[weekdays[key]].add({
           'title': title,
           'date': {
             "startTime":
@@ -223,23 +227,33 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
       );
   }
   Map<String, Map<String, dynamic>> _temp = {};
-  //Use Map to aviod duplicate
+  //Use Map to avoid duplicate
   // use coursetable to create courses.
-  for (int key = 0; key < keyName.length; key++) {
-    var eachDay = data['coursetable'][keyName[key]];
-    for (int eachIndex = 0; eachIndex < eachDay.length; eachIndex++) {
-      if (_temp['${key}_${eachDay[eachIndex]['title']}}'] != null) {
-        _temp['${key}_${eachDay[eachIndex]['title']}}']['times'] +=
-            ",第${eachIndex}節";
+  for (int i = 0; i < weekdays.length; i++) {
+    var weekdayCourses = courseTable[weekdays[i]];
+    for (int timeCodeIndex = 0;
+        timeCodeIndex < weekdayCourses.length;
+        timeCodeIndex++) {
+      final courseTitle = weekdayCourses[timeCodeIndex]['title'];
+      if (_temp[courseTitle] != null) {
+        _temp[courseTitle]['sectionTimes'].add({
+          "index": timeCodeIndex,
+          "weekday": i + 1,
+        });
 
         continue;
       }
       //
-      _temp['${key}_${eachDay[eachIndex]['title']}}'] = {
-        'title': eachDay[eachIndex]['title'],
-        'times': "${dayNameConvert[keyName[key]]} 第${eachIndex}節 ",
-        "instructors": eachDay[eachIndex]['instructors'],
-        'location': eachDay[eachIndex]['location']
+      _temp[courseTitle] = {
+        'title': courseTitle,
+        'sectionTimes': [
+          {
+            "index": timeCodeIndex,
+            "weekday": i + 1,
+          }
+        ],
+        "instructors": weekdayCourses[timeCodeIndex]['instructors'],
+        'location': weekdayCourses[timeCodeIndex]['location']
       };
     }
   }
