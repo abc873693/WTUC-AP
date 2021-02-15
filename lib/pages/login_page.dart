@@ -34,16 +34,9 @@ class LoginPageState extends State<LoginPage> {
   var isRememberPassword = true;
   var isAutoLogin = false;
 
-  int gravity = Toast.BOTTOM;
-
   @override
   void initState() {
     _getPreference();
-    if ((!kIsWeb && (Platform.isAndroid || Platform.isIOS))) {
-      KeyboardVisibility.onChange.listen(
-        (bool visible) => gravity = visible ? Toast.TOP : Toast.BOTTOM,
-      );
-    }
     super.initState();
   }
 
@@ -164,7 +157,7 @@ class LoginPageState extends State<LoginPage> {
 
   _login() async {
     if (_username.text.isEmpty || _password.text.isEmpty) {
-      ApUtils.showToast(context, ap.doNotEmpty, gravity: gravity);
+      ApUtils.showToast(context, ap.doNotEmpty);
     } else {
       showDialog(
         context: context,
@@ -193,7 +186,7 @@ class LoginPageState extends State<LoginPage> {
           },
           onFailure: (DioError e) {
             Navigator.of(context, rootNavigator: true).pop();
-            ApUtils.handleDioError(context, e, gravity: gravity);
+            ApUtils.handleDioError(context, e);
             if (e.type != DioErrorType.CANCEL) _offlineLogin();
           },
           onError: (GeneralResponse response) {
