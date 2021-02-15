@@ -156,14 +156,16 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
         url,
         options: Options(responseType: ResponseType.bytes),
       );
-      setState(() {
-        pdfState = PdfState.finish;
-        pdfData = response.data;
-      });
+      if (mounted)
+        setState(() {
+          pdfState = PdfState.finish;
+          pdfData = response.data;
+        });
     } catch (e) {
-      setState(() {
-        pdfState = PdfState.error;
-      });
+      if (mounted)
+        setState(() {
+          pdfState = PdfState.error;
+        });
       throw e;
     }
   }
