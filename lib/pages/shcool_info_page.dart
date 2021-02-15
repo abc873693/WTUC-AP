@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/notification_data.dart';
 import 'package:ap_common/models/phone_model.dart';
@@ -52,8 +54,6 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
 
   PdfState pdfState = PdfState.loading;
 
-  PdfController pdfController;
-
   ApLocalizations ap;
 
   TabController controller;
@@ -62,6 +62,8 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
 
   static const DEFAULT_SCHEDULE =
       'https://a001.wzu.edu.tw/datas/upload/files/%E8%A1%8C%E4%BA%8B%E6%9B%86/109/109%E9%80%B2%E4%BF%AE%E9%83%A8%E9%83%A8%E8%A1%8C%E4%BA%8B%E6%9B%86_1090930%E4%BF%AE%E6%AD%A3%E7%89%88_.pdf';
+
+  Uint8List pdfData;
 
   @override
   void initState() {
@@ -93,7 +95,8 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
           ),
           PdfScaffold(
             state: pdfState,
-            pdfController: pdfController,
+            data: pdfData,
+            fileName: 'schedule',
             onRefresh: () => _getSchedules(),
           ),
         ],
@@ -155,9 +158,7 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
       );
       setState(() {
         pdfState = PdfState.finish;
-        pdfController = PdfController(
-          document: PdfDocument.openData(response.data),
-        );
+        pdfData = response.data;
       });
     } catch (e) {
       setState(() {
