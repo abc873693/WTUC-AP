@@ -89,7 +89,7 @@ class HomePageState extends State<HomePage> {
           icon: Icon(ApIcon.codeIcon),
           onPressed: () {
             Navigator.of(context).push(
-              CupertinoPageRoute(
+              MaterialPageRoute(
                 builder: (_) => OpenSourcePage(),
               ),
             );
@@ -427,7 +427,7 @@ class HomePageState extends State<HomePage> {
 
   Future openLoginPage() async {
     var result = await Navigator.of(context).push(
-      CupertinoPageRoute(
+      MaterialPageRoute(
         builder: (_) => LoginPage(),
       ),
     );
