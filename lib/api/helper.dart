@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/course_data.dart';
@@ -11,14 +10,16 @@ import 'package:ap_common/models/user_info.dart';
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/wtuc_helper.dart';
 import 'package:wtuc_ap/models/teaching_evaluation.dart';
 export 'package:ap_common/callback/general_callback.dart';
 
 class Helper {
   static Helper _instance;
-  static Dio dio;
+
+  static Helper get instance {
+    return _instance ??= Helper();
+  }
 
   static String username;
   static String password;
@@ -26,12 +27,7 @@ class Helper {
   static bool isSupportCacheData =
       (!kIsWeb && (Platform.isIOS || Platform.isMacOS || Platform.isAndroid));
 
-  static Helper get instance {
-    if (_instance == null) {
-      _instance = Helper();
-    }
-    return _instance;
-  }
+  Dio dio;
 
   Future<GeneralResponse> login({
     @required String username,
@@ -39,7 +35,7 @@ class Helper {
     GeneralCallback<GeneralResponse> callback,
   }) async {
     try {
-      var loginResponse = await WebApHelper.instance.wzuApLogin(
+      await WebApHelper.instance.wzuApLogin(
         username: username,
         password: password,
       );
@@ -168,8 +164,7 @@ class Helper {
   }) async {
     try {
       for (var teachingEvaluation in teachingEvaluations) {
-        var data = await WebApHelper.instance
-            .sendTeachingEvaluation(teachingEvaluation);
+        await WebApHelper.instance.sendTeachingEvaluation(teachingEvaluation);
       }
       return (callback == null)
           ? GeneralResponse.success()
