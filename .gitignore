@@ -41,4 +41,8 @@ app.*.symbols
 app.*.map.json
 
 android/app/google-services.json
+key.jks
+service_account_key.json
+android_keys.zip
+
 /ios/Runner/GoogleService-Info.plist
