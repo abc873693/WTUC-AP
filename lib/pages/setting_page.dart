@@ -20,15 +20,11 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   ApLocalizations ap;
 
   String appVersion;
-  bool busNotify = false, courseNotify = false, displayPicture = true;
-  bool isOffline = false;
 
-  var autoSendEvent = false;
+  bool displayPicture = true;
 
   @override
   void initState() {
@@ -47,7 +43,6 @@ class SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     ap = ApLocalizations.of(context);
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(ap.settings),
         backgroundColor: ApTheme.of(context).blue,
@@ -112,15 +107,13 @@ class SettingPageState extends State<SettingPage> {
 
   _getPreference() async {
     PackageInfo packageInfo;
-    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS))
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS)) {
       packageInfo = await PackageInfo.fromPlatform();
+      appVersion = packageInfo?.version ?? '0.1.3';
+    }
     setState(() {
-      isOffline = Preferences.getBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
-      appVersion = packageInfo?.version ?? '3.4.2';
-      courseNotify = Preferences.getBool(Constants.PREF_COURSE_NOTIFY, false);
       displayPicture =
           Preferences.getBool(Constants.PREF_DISPLAY_PICTURE, true);
-      busNotify = Preferences.getBool(Constants.PREF_BUS_NOTIFY, false);
     });
   }
 }
