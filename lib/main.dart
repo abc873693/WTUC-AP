@@ -19,8 +19,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpClient.enableTimelineLogging = kDebugMode;
   await Preferences.init(key: Constants.key, iv: Constants.iv);
-  ApIcon.code =
-      Preferences.getString(Constants.PREF_ICON_STYLE_CODE, ApIcon.OUTLINED);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   if (FirebaseUtils.isSupportCore) await Firebase.initializeApp();
   if (!kDebugMode && FirebaseUtils.isSupportCrashlytics) {

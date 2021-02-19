@@ -29,11 +29,6 @@ class Constants {
   static const PREF_USER_INFO = "pref_user_info";
   static const PREF_BUS_RESERVATIONS_DATA = "pref_bus_reservevations_data";
 
-  static const PREF_LANGUAGE_CODE = 'pref_language_code';
-  static const PREF_THEME_CODE = 'pref_theme_code';
-  static const PREF_ICON_STYLE_CODE = 'pref_icon_style_code';
-  static const PREF_THEME_MODE_INDEX = 'pref_theme_mode_index';
-
   static const PREF_AP_ENABLE = "pref_ap_enable";
   static const PREF_BUS_ENABLE = "pref_bus_enable";
   static const PREF_LEAVE_ENABLE = "pref_leave_enable";

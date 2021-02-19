@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:ap_common/config/analytics_constants.dart';
+import 'package:ap_common/config/ap_constants.dart';
 import 'package:ap_common/pages/about_us_page.dart';
 import 'package:ap_common/pages/open_source_page.dart';
 import 'package:ap_common/resources/ap_icon.dart';
@@ -49,7 +50,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     analytics = FirebaseUtils.init();
     themeMode = ThemeMode
-        .values[Preferences.getInt(Constants.PREF_THEME_MODE_INDEX, 0)];
+        .values[Preferences.getInt(ApConstants.PREF_THEME_MODE_INDEX, 0)];
     FirebaseAnalyticsUtils.instance.logThemeEvent(themeMode);
     FirebaseAnalyticsUtils.instance
         .setUserProperty(AnalyticsConstants.ICON_STYLE, ApIcon.code);
@@ -80,7 +81,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           localeResolutionCallback:
               (Locale locale, Iterable<Locale> supportedLocales) {
             String languageCode = Preferences.getString(
-              Constants.PREF_LANGUAGE_CODE,
+              ApConstants.PREF_LANGUAGE_CODE,
               ApSupportLanguageConstants.SYSTEM,
             );
             if (languageCode == ApSupportLanguageConstants.SYSTEM)
