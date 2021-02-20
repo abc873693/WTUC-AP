@@ -115,11 +115,11 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
         items: [
           BottomNavigationBarItem(
             icon: Icon(ApIcon.phone),
-            title: Text(ap.phones),
+            label: ap.phones,
           ),
           BottomNavigationBarItem(
             icon: Icon(ApIcon.dateRange),
-            title: Text(ap.events),
+            label: ap.events,
           ),
         ],
       ),

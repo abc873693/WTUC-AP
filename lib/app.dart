@@ -15,7 +15,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'config/constants.dart';
 import 'pages/home_page.dart';
 import 'utils/app_localizations.dart';
 import 'widgets/share_data_widget.dart';

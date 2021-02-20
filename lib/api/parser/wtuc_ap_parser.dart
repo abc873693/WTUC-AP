@@ -46,10 +46,10 @@ List<String> captchaUrlParser(dynamic html) {
     html = clearTransEncoding(html);
   }
   var document = parse(html);
-  var img_urls = document.getElementById('table1').getElementsByTagName("img");
+  var imgUrls = document.getElementById('table1').getElementsByTagName("img");
   List<String> result = [];
-  for (int i = 0; i < img_urls.length; i++) {
-    result.add(img_urls[i].attributes['src']);
+  for (int i = 0; i < imgUrls.length; i++) {
+    result.add(imgUrls[i].attributes['src']);
   }
   return result;
 }
@@ -59,12 +59,13 @@ String loginRequireParser(dynamic html) {
     html = clearTransEncoding(html);
   }
   var document = parse(html);
-  var all_input = document.getElementsByTagName('input');
-  for (int i = 0; i < all_input.length; i++) {
-    if (all_input[i].attributes['name'] == 'SYSTEM_MAGICNUMBER') {
-      return all_input[i].attributes['value'];
+  var allInput = document.getElementsByTagName('input');
+  for (int i = 0; i < allInput.length; i++) {
+    if (allInput[i].attributes['name'] == 'SYSTEM_MAGICNUMBER') {
+      return allInput[i].attributes['value'];
     }
   }
+  return null;
 }
 
 String formUrlEncoded(Map<String, dynamic> data) {
@@ -76,7 +77,7 @@ String formUrlEncoded(Map<String, dynamic> data) {
     if (temp != null) {
       temp += "&";
     }
-    temp += "${key}=${value}";
+    temp += "$key=$value";
   });
   return temp;
 }

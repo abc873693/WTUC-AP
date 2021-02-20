@@ -1,10 +1,8 @@
 import 'package:ap_common/models/user_info.dart';
 import 'package:ap_common/scaffold/user_info_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:wtuc_ap/api/helper.dart';
 
-import '../res/assets.dart';
 
 class UserInfoPage extends StatefulWidget {
   static const String routerName = "/userInfo";

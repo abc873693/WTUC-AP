@@ -3,12 +3,10 @@ import 'dart:typed_data';
 
 import 'package:ap_common/models/semester_data.dart';
 import 'package:ap_common/models/user_info.dart';
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/cupertino.dart';
-import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:html/parser.dart';
 import 'package:wtuc_ap/api/private_cookie_manager.dart';
@@ -76,7 +74,7 @@ class WebApHelper {
     @required String username,
     @required String password,
   }) async {
-    Map<String, String> captcha_md5_data = {
+    Map<String, String> captchaMd5Data = {
       "9bcd5ab8fc729c83bdbbc784e3002d2f": "3",
       "543cd21e5aaa43d056d8068654c54b9a": "4",
       "5b24f8c135fee3ae3b14a1b9d0594704": "5",
@@ -95,31 +93,31 @@ class WebApHelper {
       "9197aa82ba8921840737c118d1a12f79": "t"
     };
 
-    Response login_page_request = await dio.get("$ssoHost/Portal/login.htm");
-    List<Future<Response>> async_pool = [];
-    var captcha_urls = captchaUrlParser(login_page_request.data);
-    for (int i = 0; i < captcha_urls.length; i++) {
-      async_pool.add(dio.get("$ssoHost${captcha_urls[i]}",
+    Response loginPageRequest = await dio.get("$ssoHost/Portal/login.htm");
+    List<Future<Response>> asyncPool = [];
+    var captchaUrls = captchaUrlParser(loginPageRequest.data);
+    for (int i = 0; i < captchaUrls.length; i++) {
+      asyncPool.add(dio.get("$ssoHost${captchaUrls[i]}",
           options: Options(responseType: ResponseType.bytes)));
     }
 
-    String captcha_code = "";
-    for (int i = 0; i < async_pool.length; i++) {
-      var char_captcha_image = await async_pool[i];
+    String captchaCode = "";
+    for (int i = 0; i < asyncPool.length; i++) {
+      var charCaptchaImage = await asyncPool[i];
 
-      var t = md5.convert(char_captcha_image.data).toString();
-      captcha_code += captcha_md5_data[t];
+      var t = md5.convert(charCaptchaImage.data).toString();
+      captchaCode += captchaMd5Data[t];
     }
     //followRedirects: false
 
     // login request
 
-    Response login_request = await dio.post('$ssoHost/Portal/loginprocess',
+    Response loginRequest = await dio.post('$ssoHost/Portal/loginprocess',
         data: {
           'USERID': username,
           'PASSWD': password,
-          'SYSTEM_MAGICNUMBERTEXT': captcha_code,
-          'SYSTEM_MAGICNUMBER': loginRequireParser(login_page_request.data)
+          'SYSTEM_MAGICNUMBERTEXT': captchaCode,
+          'SYSTEM_MAGICNUMBER': loginRequireParser(loginPageRequest.data)
         },
         options: Options(
             followRedirects: false,
@@ -127,7 +125,7 @@ class WebApHelper {
             validateStatus: (status) {
               return status < 500;
             }));
-    if (login_request.statusCode == 302) {
+    if (loginRequest.statusCode == 302) {
       ssoIsLogin = true;
       return true;
     }
@@ -138,16 +136,16 @@ class WebApHelper {
     @required String username,
     @required String password,
   }) async {
-    Response _login_request = await dio.post(
+    Response _ = await dio.post(
       "https://info.wzu.edu.tw/wtuc/portalidx.jsp",
       data: {"uid": username, "pwd": password},
       options: Options(contentType: Headers.formUrlEncodedContentType),
     );
 
     // login status check
-    Response login_check_request = await dio.get(
+    Response loginCheckRequest = await dio.get(
         "https://info.wzu.edu.tw/wtuc/portalleft.jsp?sys_name=web&sys_kind=01");
-    if (login_check_request.data.substring(0, 1000).indexOf("alert(") > -1) {
+    if (loginCheckRequest.data.substring(0, 1000).indexOf("alert(") > -1) {
       throw GeneralResponse(
         statusCode: ApiStatusCode.LOGIN_FAIL,
         message: "Login fail.",
@@ -168,7 +166,7 @@ class WebApHelper {
     String url;
     if (otherUrl == null) {
       url =
-          "https://info.wzu.edu.tw/wtuc/${queryQid.substring(0, 2)}_pro/${queryQid}.jsp";
+          "https://info.wzu.edu.tw/wtuc/${queryQid.substring(0, 2)}_pro/$queryQid.jsp";
     } else {
       url = otherUrl;
     }
@@ -183,12 +181,12 @@ class WebApHelper {
       requestData = queryData;
     } else {
       dio.options.headers["Content-Type"] = "application/x-www-form-urlencoded";
-      Options other_options;
+      Options otherOptions;
       if (bytesResponse != null) {
-        other_options = Options(responseType: ResponseType.bytes);
+        otherOptions = Options(responseType: ResponseType.bytes);
       }
       _options = buildConfigurableCacheOptions(
-        options: other_options,
+        options: otherOptions,
         maxAge: cacheExpiredTime ?? Duration(seconds: 60),
         primaryKey: cacheKey,
       );
@@ -234,13 +232,13 @@ class WebApHelper {
     var query = await wtucApQuery(
       "ag001",
       {"arg01": years, "arg02": semesterValue},
-      cacheKey: "${coursetableCacheKey}_${years}_${semesterValue}",
+      cacheKey: "${coursetableCacheKey}_${years}_$semesterValue",
       cacheExpiredTime: Duration(hours: 6),
       bytesResponse: true,
     );
     var parsedData = await wtucCoursetableParser(query.data);
     if (parsedData["courses"].length == 0) {
-      _manager.delete("${coursetableCacheKey}_${years}_${semesterValue}");
+      _manager.delete("${coursetableCacheKey}_${years}_$semesterValue");
     }
     return CourseData.fromJson(
       parsedData,
@@ -283,13 +281,13 @@ class WebApHelper {
     var query = await wtucApQuery(
       "ag008",
       {"arg01": years, "arg02": semesterValue},
-      cacheKey: "${scoresCacheKey}_${years}_${semesterValue}",
+      cacheKey: "${scoresCacheKey}_${years}_$semesterValue",
       cacheExpiredTime: Duration(hours: 6),
     );
 
     var parsedData = wtucScoresParser(query.data);
     if (parsedData["scores"].length == 0) {
-      _manager.delete("${scoresCacheKey}_${years}_${semesterValue}");
+      _manager.delete("${scoresCacheKey}_${years}_$semesterValue");
     }
 
     return ScoreData.fromJson(
@@ -355,7 +353,7 @@ class WebApHelper {
       TeachingEvaluation teachingEvaluation) async {
     print('id = ${teachingEvaluation.id}');
     dio.options.headers["Content-Type"] = "application/x-www-form-urlencoded";
-    var tmp = await dio.post(
+    await dio.post(
       'https://info.wzu.edu.tw/wtuc/bg_pro/bg052_01.jsp',
       data: {
         'arg': teachingEvaluation.id,
