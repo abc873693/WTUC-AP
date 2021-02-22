@@ -210,9 +210,7 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
                 "${courseTime[1].split('-')[0].substring(0, 2)}:${courseTime[1].split('-')[0].substring(2, 4)}",
             "endTime":
                 "${courseTime[1].split('-')[1].substring(0, 2)}:${courseTime[1].split('-')[1].substring(2, 4)}",
-            'section': courseTime[0]
-                .replaceAll(" ", "")
-                .replaceAll(String.fromCharCode(160), "")
+            'section': eachSession - (eachSession >= 11 ? 2 : 1)
           },
           'location': {"room": splitData[3]},
           'instructors': splitData[2].split(","),
@@ -237,10 +235,11 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
         timeCodeIndex++) {
       final title = weekdayCourses[timeCodeIndex]['title'];
       final location = weekdayCourses[timeCodeIndex]['location'];
+      final sectionIndex = weekdayCourses[timeCodeIndex]['date']['section'];
       final key = '${title}_$location';
       if (_temp[key] != null) {
         _temp[key]['sectionTimes'].add({
-          "index": timeCodeIndex,
+          "index": sectionIndex,
           "weekday": i + 1,
         });
 
@@ -251,7 +250,7 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
         'title': title,
         'sectionTimes': [
           {
-            "index": timeCodeIndex,
+            "index": sectionIndex,
             "weekday": i + 1,
           }
         ],
