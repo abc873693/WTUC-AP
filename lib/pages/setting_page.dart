@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ap_common/resources/ap_theme.dart';
+import 'package:ap_common/utils/analytics_utils.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
 import 'package:ap_common/utils/ap_utils.dart';
 import 'package:ap_common/utils/preferences.dart';
@@ -92,13 +93,20 @@ class SettingPageState extends State<SettingPage> {
             ),
             SettingTitle(text: ap.otherInfo),
             SettingItem(
-                text: ap.feedback,
-                subText: ap.feedbackViaFacebook,
-                onTap: () {
-                  ApUtils.launchFbFansPage(context, Constants.FANS_PAGE_ID);
-                }),
+              text: ap.feedback,
+              subText: ap.feedbackViaFacebook,
+              onTap: () {
+                ApUtils.launchFbFansPage(context, Constants.FANS_PAGE_ID);
+                AnalyticsUtils.instance?.logEvent('feedback_click');
+              },
+            ),
             SettingItem(
-                text: ap.appVersion, subText: "v$appVersion", onTap: () {}),
+              text: ap.appVersion,
+              subText: "v$appVersion",
+              onTap: () {
+                AnalyticsUtils.instance?.logEvent('app_version_click');
+              },
+            ),
           ],
         ),
       ),
