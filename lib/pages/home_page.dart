@@ -1,4 +1,4 @@
-import 'package:ap_common/api/github_helper.dart';
+import 'package:ap_common/api/announcement_helper.dart';
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/user_info.dart';
 import 'package:ap_common/pages/announcement_content_page.dart';
@@ -53,12 +53,9 @@ class HomePageState extends State<HomePage> {
   AppLocalizations app;
   ApLocalizations ap;
 
-  Map<String, List<Announcement>> newsMap;
-
   Widget content;
 
-  List<Announcement> get announcements =>
-      (newsMap == null) ? null : newsMap[AppLocalizations.locale.languageCode];
+  List<Announcement> announcements;
 
   var isLogin = false;
   bool displayPicture = true;
@@ -297,27 +294,20 @@ class HomePageState extends State<HomePage> {
   }
 
   _getAnnouncements() async {
-    GitHubHelper.instance.getAnnouncement(
-      gitHubUsername: 'abc873693',
-      hashCode: 'e1ea5bda328ef8ffa01334c0da6d62b9',
-      tag: 'wtuc',
+    AnnouncementHelper.instance.getAnnouncements(
+      tags: ['wtuc'],
       callback: GeneralCallback(
         onFailure: (_) => setState(() => state = HomeState.error),
         onError: (_) => setState(() => state = HomeState.error),
-        onSuccess: (Map<String, List<Announcement>> data) {
-          newsMap = data;
-          setState(() {
-            if (announcements == null || announcements.length == 0)
-              state = HomeState.empty;
-            else {
-              newsMap.forEach((_, data) {
-                data.sort((a, b) {
-                  return b.weight.compareTo(a.weight);
-                });
-              });
-              state = HomeState.finish;
-            }
-          });
+        onSuccess: (List<Announcement> data) {
+          announcements = data;
+          if (mounted)
+            setState(() {
+              if (announcements == null || announcements.length == 0)
+                state = HomeState.empty;
+              else
+                state = HomeState.finish;
+            });
         },
       ),
     );
