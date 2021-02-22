@@ -75,11 +75,25 @@ class CoursePageState extends State<CoursePage> {
     );
   }
 
+  void _onFailure(DioError e) async {
+    setState(() {
+      state = CourseState.custom;
+      customStateHint = e.i18nMessage;
+    });
+  }
+
+  void _onError(GeneralResponse generalResponse) async {
+    setState(() {
+      state = CourseState.custom;
+      customStateHint = ap.unknownError;
+    });
+  }
+
   void _getSemester() async {
     Helper.instance.getSemester(
       callback: GeneralCallback<SemesterData>(
-        onFailure: null,
-        onError: null,
+        onFailure: _onFailure,
+        onError: _onError,
         onSuccess: (data) {
           setState(() {
             semesterData = data;
@@ -104,18 +118,8 @@ class CoursePageState extends State<CoursePage> {
               notifyData = CourseNotifyData.load(courseNotifyCacheKey);
             });
         },
-        onFailure: (DioError e) async {
-          setState(() {
-            state = CourseState.custom;
-            customStateHint = e.i18nMessage;
-          });
-        },
-        onError: (GeneralResponse generalResponse) async {
-          setState(() {
-            state = CourseState.custom;
-            customStateHint = ap.unknownError;
-          });
-        },
+        onFailure: _onFailure,
+        onError: _onError,
       ),
     );
   }
