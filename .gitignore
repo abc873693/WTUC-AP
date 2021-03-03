@@ -45,4 +45,5 @@ key.jks
 service_account_key.json
 android_keys.zip
 
-/ios/Runner/GoogleService-Info.plist
+GoogleService-Info.plist
+ios_keys.zip
