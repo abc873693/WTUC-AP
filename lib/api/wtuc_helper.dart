@@ -22,37 +22,39 @@ import 'api_status_code.dart';
 import 'helper.dart';
 
 class WebApHelper {
-  static Dio dio;
-  static DioCacheManager _manager;
-  static WebApHelper _instance;
-  static CookieJar cookieJar;
+  static String ssoHost = "https://sso.wzu.edu.tw";
 
-  static int reLoginReTryCountsLimit = 3;
-  static int reLoginReTryCounts = 0;
+  static WebApHelper _instance;
+
+  static WebApHelper get instance {
+    return _instance ?? WebApHelper();
+  }
+
+  Dio dio;
+  DioCacheManager _manager;
+
+  CookieJar cookieJar;
+
+  int reLoginReTryCountsLimit = 3;
+  int reLoginReTryCounts = 0;
 
   bool ssoIsLogin = false;
   bool infoIsLogin = false;
-  static String ssoHost = "https://sso.wzu.edu.tw";
 
   //cache key name
-  static String get semesterCacheKey => "semesterCacheKey";
+  String get semesterCacheKey => "semesterCacheKey";
 
-  static String get coursetableCacheKey =>
-      "${Helper.username}_coursetableCacheKey";
+  String get coursetableCacheKey => "${Helper.username}_coursetableCacheKey";
 
-  static String get scoresCacheKey => "${Helper.username}_scoresCacheKey";
+  String get scoresCacheKey => "${Helper.username}_scoresCacheKey";
 
-  static String get userInfoCacheKey => "${Helper.username}_userInfoCacheKey";
+  String get userInfoCacheKey => "${Helper.username}_userInfoCacheKey";
 
-  static WebApHelper get instance {
-    if (_instance == null) {
-      _instance = WebApHelper();
-      dioInit();
-    }
-    return _instance;
+  WebApHelper() {
+    dioInit();
   }
 
-  static dioInit() {
+  void dioInit() {
     // Use PrivateCookieManager to overwrite origin CookieManager, because
     // Cookie name of the NKUST ap system not follow the RFC6265. :(
     dio = Dio();
