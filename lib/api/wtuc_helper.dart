@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:ap_common/models/semester_data.dart';
 import 'package:ap_common/models/user_info.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:crypto/crypto.dart';
@@ -31,9 +31,22 @@ class WebApHelper {
   }
 
   Dio dio;
-  DioCacheManager _manager;
 
   CookieJar cookieJar;
+
+  final options = CacheOptions(
+    store: DbCacheStore(),
+    // Required.
+    policy: CachePolicy.requestFirst,
+    // Default. Requests first and caches response.
+    hitCacheOnErrorExcept: [401, 403],
+    // Optional. Returns a cached response on error if available but for statuses 401 & 403.
+    priority: CachePriority.normal,
+    // Optional. Default. Allows 3 cache levels and ease cleanup.
+    maxStale: const Duration(
+        days:
+            7), // Very optional. Overrides any HTTP directive to delete entry past this duration.
+  );
 
   int reLoginReTryCountsLimit = 3;
   int reLoginReTryCounts = 0;
@@ -60,9 +73,7 @@ class WebApHelper {
     dio = Dio();
     cookieJar = CookieJar();
     if (Helper.isSupportCacheData) {
-      _manager =
-          DioCacheManager(CacheConfig(baseUrl: "https://info.wzu.edu.tw"));
-      dio.interceptors.add(_manager.interceptor);
+      dio.interceptors.add(DioCacheInterceptor(options: options));
     }
     dio.interceptors.add(PrivateCookieManager(cookieJar));
     dio.options.headers['user-agent'] =
@@ -183,15 +194,15 @@ class WebApHelper {
       requestData = queryData;
     } else {
       dio.options.headers["Content-Type"] = "application/x-www-form-urlencoded";
-      Options otherOptions;
+      Options otherOptions = Options();
       if (bytesResponse != null) {
-        otherOptions = Options(responseType: ResponseType.bytes);
+        otherOptions.responseType = ResponseType.bytes;
       }
-      _options = buildConfigurableCacheOptions(
-        options: otherOptions,
-        maxAge: cacheExpiredTime ?? Duration(seconds: 60),
-        primaryKey: cacheKey,
-      );
+      otherOptions.extra = CacheOptions(
+        maxStale: cacheExpiredTime ?? Duration(seconds: 60),
+        keyBuilder: (options) => cacheKey,
+      ).toExtra();
+      _options = otherOptions;
       requestData = formUrlEncoded(queryData);
     }
     Response<dynamic> request;
@@ -211,7 +222,7 @@ class WebApHelper {
     }
 
     if (wtucApQueryStatusParser(request.data) == 1) {
-      if (Helper.isSupportCacheData) _manager.delete(cacheKey);
+      if (Helper.isSupportCacheData) options.store.delete(cacheKey);
       reLoginReTryCounts += 1;
       await wzuApLogin(username: Helper.username, password: Helper.password);
       return wtucApQuery(queryQid, queryData, bytesResponse: bytesResponse);
@@ -240,7 +251,7 @@ class WebApHelper {
     );
     var parsedData = await wtucCoursetableParser(query.data);
     if (parsedData["courses"].length == 0) {
-      _manager.delete("${coursetableCacheKey}_${years}_$semesterValue");
+      options.store.delete("${coursetableCacheKey}_${years}_$semesterValue");
     }
     return CourseData.fromJson(
       parsedData,
@@ -266,7 +277,7 @@ class WebApHelper {
     var parsedData = wtucSemestersParser(query.data);
     if (parsedData["data"].length < 1) {
       //data error delete cache
-      _manager.delete(semesterCacheKey);
+      options.store.delete(semesterCacheKey);
     }
 
     return SemesterData.fromJson(parsedData);
@@ -289,7 +300,7 @@ class WebApHelper {
 
     var parsedData = wtucScoresParser(query.data);
     if (parsedData["scores"].length == 0) {
-      _manager.delete("${scoresCacheKey}_${years}_$semesterValue");
+      options.store.delete("${scoresCacheKey}_${years}_$semesterValue");
     }
 
     return ScoreData.fromJson(
@@ -314,7 +325,7 @@ class WebApHelper {
 
     var parsedData = wtucUserInfoParser(query.data);
     if (parsedData["id"] == null) {
-      _manager.delete(userInfoCacheKey);
+      options.store.delete(userInfoCacheKey);
     }
     return UserInfo.fromJson(
       parsedData,
