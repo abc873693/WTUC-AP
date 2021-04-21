@@ -357,7 +357,7 @@ packages:
     source: hosted
     version: "2.1.0"
   flutter_cupertino_localizations:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_cupertino_localizations
       url: "https://pub.dartlang.org"
