@@ -9,7 +9,8 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:crypto/crypto.dart';
 import 'package:html/parser.dart';
-import 'package:wtuc_ap/api/private_cookie_manager.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+
 import 'package:wtuc_ap/api/parser/wtuc_ap_parser.dart';
 import 'package:ap_common/models/course_data.dart';
 import 'package:ap_common/models/score_data.dart';
@@ -64,7 +65,7 @@ class WebApHelper {
           DioCacheManager(CacheConfig(baseUrl: "https://info.wzu.edu.tw"));
       dio.interceptors.add(_manager.interceptor);
     }
-    dio.interceptors.add(PrivateCookieManager(cookieJar));
+    dio.interceptors.add(CookieManager(cookieJar));
     dio.options.headers['user-agent'] =
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36';
     dio.options.headers['Connection'] = 'close';

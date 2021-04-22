@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
 import 'package:wtuc_ap/pages/school_map_page.dart';
-import 'package:package_info/package_info.dart';
 import 'package:wtuc_ap/pages/study/teaching_evaluation_page.dart';
 
 import '../config/constants.dart';
@@ -339,7 +338,7 @@ class HomePageState extends State<HomePage> {
   _getUserPicture() async {
     try {
       if ((userInfo?.pictureUrl) == null) return;
-      var response = await http.get(userInfo.pictureUrl);
+      var response = await http.get(Uri.parse(userInfo.pictureUrl));
       if (!response.body.contains('html')) {
         if (mounted) {
           setState(() {
@@ -502,7 +501,7 @@ class HomePageState extends State<HomePage> {
 
   _checkCanUseQuickFillIn() async {
     if (FirebaseUtils.isSupportRemoteConfig) {
-      final config = await RemoteConfig.instance;
+      final config = RemoteConfig.instance;
       setState(() {
         canUseQuickFillIn =
             config.getBool(Constants.QUICK_FILL_IN_TEACHING_EVALUATION);

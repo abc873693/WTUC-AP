@@ -130,9 +130,9 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
     String pdfUrl;
     if (FirebaseUtils.isSupportRemoteConfig) {
       try {
-        final RemoteConfig remoteConfig = await RemoteConfig.instance;
-        await remoteConfig.fetch(expiration: const Duration(hours: 1));
-        await remoteConfig.activateFetched();
+        final RemoteConfig remoteConfig = RemoteConfig.instance;
+        await remoteConfig.fetch();
+        await remoteConfig.fetchAndActivate();
         pdfUrl = remoteConfig.getString(Constants.SCHEDULE_PDF_URL);
         if (pdfUrl != null && pdfUrl.isNotEmpty) {
           Preferences.setString(Constants.SCHEDULE_PDF_URL, pdfUrl);
