@@ -373,6 +373,7 @@ class HomePageState extends State<HomePage> {
           isLogin = true;
           Preferences.setBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
           _getUserInfo();
+          _checkCanUseQuickFillIn();
           if (state != HomeState.finish) {
             _getAnnouncements();
           }
@@ -404,14 +405,6 @@ class HomePageState extends State<HomePage> {
         },
       ),
     );
-    isLogin = true;
-    Preferences.setBool(Constants.PREF_IS_OFFLINE_LOGIN, false);
-    _getUserInfo();
-    _checkCanUseQuickFillIn();
-    if (state != HomeState.finish) {
-      _getAnnouncements();
-    }
-    _homeKey.currentState.showBasicHint(text: ap.loginSuccess);
   }
 
   Future openLoginPage() async {
