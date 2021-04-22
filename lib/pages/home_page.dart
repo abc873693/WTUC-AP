@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
 import 'package:wtuc_ap/pages/school_map_page.dart';
-import 'package:package_info/package_info.dart';
 import 'package:wtuc_ap/pages/study/teaching_evaluation_page.dart';
 
 import '../config/constants.dart';
