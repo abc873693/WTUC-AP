@@ -501,7 +501,7 @@ class HomePageState extends State<HomePage> {
 
   _checkCanUseQuickFillIn() async {
     if (FirebaseUtils.isSupportRemoteConfig) {
-      final config = await RemoteConfig.instance;
+      final config = RemoteConfig.instance;
       setState(() {
         canUseQuickFillIn =
             config.getBool(Constants.QUICK_FILL_IN_TEACHING_EVALUATION);
