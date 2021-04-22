@@ -27,7 +27,7 @@ class WebApHelper {
   static WebApHelper _instance;
 
   static WebApHelper get instance {
-    return _instance ?? WebApHelper();
+    return _instance ??= WebApHelper();
   }
 
   Dio dio;
