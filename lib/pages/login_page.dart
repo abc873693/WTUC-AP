@@ -184,7 +184,7 @@ class LoginPageState extends State<LoginPage> {
           onFailure: (DioError e) {
             Navigator.of(context, rootNavigator: true).pop();
             ApUtils.handleDioError(context, e);
-            if (e.type != DioErrorType.CANCEL) _offlineLogin();
+            if (e.type != DioErrorType.cancel) _offlineLogin();
           },
           onError: (GeneralResponse response) {
             Navigator.of(context, rootNavigator: true).pop();
