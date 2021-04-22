@@ -132,6 +132,8 @@ class Helper {
     } on DioError catch (dioError) {
       callback?.onFailure(dioError);
       if (callback == null) throw dioError;
+    } on GeneralResponse catch (r) {
+      callback?.onError(r);
     } catch (e, s) {
       callback?.onError(GeneralResponse.unknownError());
       if (FirebaseUtils.isSupportCrashlytics)

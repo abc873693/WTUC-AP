@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:ap_common/utils/crashlytics_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:wtuc_ap/api/api_status_code.dart';
+import 'package:wtuc_ap/api/helper.dart';
 
 String clearTransEncoding(List<int> htmlBytes) {
   // htmlBytes is fixed-length list, need copy.
@@ -325,25 +328,48 @@ Map<String, dynamic> wtucScoresParser(String html) {
     }
   };
 
-  try {
-    var table =
-        document.getElementsByTagName("table")[2].getElementsByTagName("tr");
-    for (int scoresIndex = 1; scoresIndex < table.length; scoresIndex++) {
-      var td = table[scoresIndex].getElementsByTagName('td');
-      data['scores'].add({
-        "title": td[1].text,
-        'units': td[3].text,
-        'hours': "",
-        'required': "",
-        'at': td[3].text,
-        'middleScore': td[5].text,
-        'generalScore': td[4].text,
-        'finalScore': td[6].text,
-        'semesterScore': td[10].text,
-        'remark': "",
-      });
+  final table = document.getElementsByTagName("table");
+  if (table.length >= 2) {
+    try {
+      final trs = table[2].getElementsByTagName("tr");
+      for (int scoresIndex = 1; scoresIndex < trs.length; scoresIndex++) {
+        var td = trs[scoresIndex].getElementsByTagName('td');
+        data['scores'].add({
+          "title": td[1].text,
+          'units': td[3].text,
+          'hours': "",
+          'required': "",
+          'at': td[3].text,
+          'middleScore': td[5].text,
+          'generalScore': td[4].text,
+          'finalScore': td[6].text,
+          'semesterScore': td[10].text,
+          'remark': "",
+        });
+      }
+    } catch (e, s) {
+      CrashlyticsUtils.instance.recordError(
+        GeneralResponse.unknownError(),
+        s,
+        reason: document.text,
+      );
     }
-  } catch (e) {}
+  } else {
+    final b = document.getElementsByTagName('b');
+    if (b.length > 0)
+      throw GeneralResponse(
+        statusCode: ApiStatusCode.SCORE_ERROR,
+        message: b.first.text,
+      );
+    else {
+      CrashlyticsUtils.instance.recordError(
+        GeneralResponse.unknownError(),
+        StackTrace.current,
+        reason: document.text,
+      );
+      throw GeneralResponse.unknownError();
+    }
+  }
 
   return data;
 }

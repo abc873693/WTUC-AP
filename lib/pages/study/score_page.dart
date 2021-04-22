@@ -115,7 +115,9 @@ class ScorePageState extends State<ScorePage> {
         onError: (GeneralResponse generalResponse) async {
           setState(() {
             state = ScoreState.custom;
-            customStateHint = ap.unknownError;
+            customStateHint = generalResponse.message.isEmpty
+                ? ap.unknownError
+                : generalResponse.message;
           });
         },
       ),
