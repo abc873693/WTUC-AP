@@ -14,12 +14,14 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  ap_common: 0.13.6
+  ap_common: ^0.16.0-nullsafety.3
   #    path: ../ap_common
-  ap_common_firebase: 0.6.0-dev.2
-  dio: 3.0.10
-  dio_http_cache: ^0.2.11
-  html: 0.14.0+3
+  ap_common_firebase: ^0.8.0-nullsafety.1
+  dio: ^4.0.0
+  dio_http_cache:
+    git:
+      url: https://github.com/hurshi/dio-http-cache
+  html: ^0.15.0
 
 dev_dependencies:
   flutter_test:
