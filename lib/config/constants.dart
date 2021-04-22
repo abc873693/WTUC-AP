@@ -62,4 +62,6 @@ class Constants {
   static const FANS_PAGE_ID = '102991398269377';
   static const PLAY_STORE_URL =
       'https://play.google.com/store/apps/details?id=com.mtuc.ap&hl=zh_TW';
+
+  static const MAIL_DOMAIN = '@gap.wzu.edu.tw';
 }
