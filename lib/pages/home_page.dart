@@ -1,6 +1,7 @@
 import 'package:ap_common/api/announcement_helper.dart';
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/user_info.dart';
+import 'package:ap_common/pages/announcement/home_page.dart';
 import 'package:ap_common/pages/announcement_content_page.dart';
 import 'package:ap_common/pages/about_us_page.dart';
 import 'package:ap_common/pages/open_source_page.dart';
@@ -126,8 +127,30 @@ class HomePageState extends State<HomePage> {
       isLogin: isLogin,
       actions: <Widget>[
         IconButton(
-          icon: Icon(ApIcon.info),
-          onPressed: _showInformationDialog,
+          icon: Icon(Icons.fiber_new_rounded),
+          tooltip: ap.announcementReviewSystem,
+          onPressed: () async {
+            ApUtils.pushCupertinoStyle(
+              context,
+              AnnouncementHomePage(
+                organizationDomain: Constants.MAIL_DOMAIN,
+              ),
+            );
+            if (FirebaseUtils.isSupportCloudMessage) {
+              try {
+                final messaging = FirebaseMessaging.instance;
+                NotificationSettings settings =
+                    await messaging.getNotificationSettings();
+                if (settings.authorizationStatus ==
+                        AuthorizationStatus.authorized ||
+                    settings.authorizationStatus ==
+                        AuthorizationStatus.provisional) {
+                  String token = await messaging.getToken();
+                  AnnouncementHelper.instance.fcmToken = token;
+                }
+              } catch (_) {}
+            }
+          },
         ),
       ],
       content: content,
@@ -350,15 +373,6 @@ class HomePageState extends State<HomePage> {
     } catch (e) {
       throw e;
     }
-  }
-
-  void _showInformationDialog() {
-    DialogUtils.showAnnouncementRule(
-      context: context,
-      onRightButtonClick: () {
-        ApUtils.launchFbFansPage(context, Constants.FANS_PAGE_ID);
-      },
-    );
   }
 
   Future _login() async {
