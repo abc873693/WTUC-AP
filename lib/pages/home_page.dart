@@ -486,8 +486,10 @@ class HomePageState extends State<HomePage> {
       );
     }
     if (!kDebugMode) {
-      VersionInfo versionInfo =
-          await FirebaseRemoteConfigUtils.getVersionInfo();
+      RemoteConfig remoteConfig = RemoteConfig.instance;
+      await remoteConfig.fetch();
+      await remoteConfig.activate();
+      VersionInfo versionInfo = remoteConfig.versionInfo;
       if (versionInfo != null)
         DialogUtils.showNewVersionContent(
           context: context,
