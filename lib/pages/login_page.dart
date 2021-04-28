@@ -1,4 +1,3 @@
-
 import 'package:ap_common/scaffold/login_scaffold.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
 import 'package:ap_common/utils/ap_utils.dart';
@@ -183,7 +182,7 @@ class LoginPageState extends State<LoginPage> {
           },
           onFailure: (DioError e) {
             Navigator.of(context, rootNavigator: true).pop();
-            ApUtils.handleDioError(context, e);
+            ApUtils.showToast(context, e.i18nMessage);
             if (e.type != DioErrorType.cancel) _offlineLogin();
           },
           onError: (GeneralResponse response) {
