@@ -114,7 +114,9 @@ class CoursePageState extends State<CoursePage> {
               courseData = data;
               isOffline = false;
               // courseData.save(semesterData.currentSemester.cacheSaveTag);
-              state = CourseState.finish;
+              state = courseData == null || courseData.courses.length == 0
+                  ? CourseState.empty
+                  : CourseState.finish;
               notifyData = CourseNotifyData.load(courseNotifyCacheKey);
             });
         },
