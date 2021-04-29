@@ -16,7 +16,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HttpClient.enableTimelineLogging = kDebugMode;
+  // HttpClient.enableTimelineLogging = kDebugMode;
   await Preferences.init(key: Constants.key, iv: Constants.iv);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   if (FirebaseUtils.isSupportCore) await Firebase.initializeApp();
