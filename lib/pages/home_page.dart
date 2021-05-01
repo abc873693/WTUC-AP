@@ -505,6 +505,9 @@ class HomePageState extends State<HomePage> {
           context: context,
           iOSAppId: '1536450161',
           defaultUrl: 'https://www.facebook.com/NKUST.ITC/',
+          githubRepositoryName: 'abc873693/WTUC-AP',
+          windowsPath:
+              'https://github.com/NKUST-ITC/abc873693/WTUC-AP/releases/download/%s/wtuc_ap_windows.zip',
           appName: app.appName,
           versionInfo: versionInfo,
         );
