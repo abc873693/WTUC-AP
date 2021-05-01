@@ -1,6 +1,12 @@
 {
-  "300": {
+  "301": {
     "visible": true,
+    "date": "2021/05/01",
+    "zh-TW": "* 改善部分功能提示\n* 加入最新消息審查系統",
+    "en-US": "* Improve a part of hint.\n* Add announcement review system"
+  },
+  "300": {
+    "visible": false,
     "date": "2021/04/29",
     "zh-TW": "* 改善部分功能提示\n* 加入最新消息審查系統",
     "en-US": "* Improve a part of hint.\n* Add announcement review system"
