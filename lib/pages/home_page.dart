@@ -248,10 +248,12 @@ class HomePageState extends State<HomePage> {
               title: ap.logout,
               onTap: () async {
                 await Preferences.setBool(Constants.PREF_AUTO_LOGIN, false);
-                isLogin = false;
-                userInfo = null;
-                content = null;
-                canUseQuickFillIn = false;
+                setState(() {
+                  isLogin = false;
+                  userInfo = null;
+                  content = null;
+                  canUseQuickFillIn = false;
+                });
                 if (!isTablet) Navigator.of(context).pop();
                 checkLogin();
               },
