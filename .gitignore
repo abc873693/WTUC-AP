@@ -47,3 +47,5 @@ android_keys.zip
 
 GoogleService-Info.plist
 ios_keys.zip
+
+.fvm/flutter_sdk
