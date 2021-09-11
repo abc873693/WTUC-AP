@@ -88,15 +88,19 @@ class HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _getAnnouncements();
-    if (Preferences.getBool(Constants.PREF_AUTO_LOGIN, false)) {
-      _login();
-    } else {
-      checkLogin();
-    }
-    if (FirebaseRemoteConfigUtils.isSupported) {
-      _checkUpdate();
-    }
+    Future.microtask(
+      () async {
+        _getAnnouncements();
+        if (Preferences.getBool(Constants.PREF_AUTO_LOGIN, false)) {
+          _login();
+        } else {
+          checkLogin();
+        }
+        if (FirebaseRemoteConfigUtils.isSupported) {
+          _checkUpdate();
+        }
+      },
+    );
     super.initState();
   }
 
