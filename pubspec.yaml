@@ -14,7 +14,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  ap_common: ^0.18.0
+  ap_common: ^0.18.3
   #    path: ../ap_common
   ap_common_firebase: ^0.10.0
   dio: ^4.0.0
