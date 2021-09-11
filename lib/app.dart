@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:ap_common/config/analytics_constants.dart';
 import 'package:ap_common/config/ap_constants.dart';
 import 'package:ap_common/pages/about_us_page.dart';
-import 'package:ap_common/pages/open_source_page.dart';
 import 'package:ap_common/resources/ap_icon.dart';
 import 'package:ap_common/resources/ap_theme.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
@@ -48,11 +47,11 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     analytics = FirebaseUtils.init();
-    themeMode = ThemeMode
-        .values[Preferences.getInt(ApConstants.PREF_THEME_MODE_INDEX, 0)];
+    themeMode =
+        ThemeMode.values[Preferences.getInt(ApConstants.prefThemeModeIndex, 0)];
     FirebaseAnalyticsUtils.instance.logThemeEvent(themeMode);
     FirebaseAnalyticsUtils.instance
-        .setUserProperty(AnalyticsConstants.ICON_STYLE, ApIcon.code);
+        .setUserProperty(AnalyticsConstants.iconStyle, ApIcon.code);
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
@@ -80,17 +79,17 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           localeResolutionCallback:
               (Locale locale, Iterable<Locale> supportedLocales) {
             String languageCode = Preferences.getString(
-              ApConstants.PREF_LANGUAGE_CODE,
-              ApSupportLanguageConstants.SYSTEM,
+              ApConstants.prefLanguageCode,
+              ApSupportLanguageConstants.system,
             );
-            if (languageCode == ApSupportLanguageConstants.SYSTEM)
+            if (languageCode == ApSupportLanguageConstants.system)
               return this.locale = ApLocalizations.delegate.isSupported(locale)
                   ? locale
                   : Locale('en');
             else
               return Locale(
                 languageCode,
-                languageCode == ApSupportLanguageConstants.ZH ? 'TW' : null,
+                languageCode == ApSupportLanguageConstants.zh ? 'TW' : null,
               );
           },
           onGenerateTitle: (context) => AppLocalizations.of(context).appName,
@@ -99,8 +98,6 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
             Navigator.defaultRouteName: (context) => HomePage(),
             AboutUsPage.routerName: (BuildContext context) =>
                 HomePageState.aboutPage(context),
-            OpenSourcePage.routerName: (BuildContext context) =>
-                OpenSourcePage(),
           },
           theme: ApTheme.light,
           darkTheme: ApTheme.dark,

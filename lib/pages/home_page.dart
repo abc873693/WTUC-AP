@@ -1,10 +1,9 @@
 import 'package:ap_common/api/announcement_helper.dart';
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/user_info.dart';
+import 'package:ap_common/pages/about_us_page.dart';
 import 'package:ap_common/pages/announcement/home_page.dart';
 import 'package:ap_common/pages/announcement_content_page.dart';
-import 'package:ap_common/pages/about_us_page.dart';
-import 'package:ap_common/pages/open_source_page.dart';
 import 'package:ap_common/resources/ap_icon.dart';
 import 'package:ap_common/resources/ap_theme.dart';
 import 'package:ap_common/scaffold/home_page_scaffold.dart';
@@ -16,10 +15,10 @@ import 'package:ap_common/widgets/ap_drawer.dart';
 import 'package:ap_common_firebase/utils/firebase_analytics_utils.dart';
 import 'package:ap_common_firebase/utils/firebase_remote_config_utils.dart';
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
 import 'package:wtuc_ap/pages/school_map_page.dart';
@@ -28,12 +27,12 @@ import 'package:wtuc_ap/pages/study/teaching_evaluation_page.dart';
 import '../config/constants.dart';
 import '../res/assets.dart';
 import '../utils/app_localizations.dart';
+import 'login_page.dart';
 import 'setting_page.dart';
 import 'shcool_info_page.dart';
-import 'user_info_page.dart';
-import 'login_page.dart';
 import 'study/course_page.dart';
 import 'study/score_page.dart';
+import 'user_info_page.dart';
 
 class HomePage extends StatefulWidget {
   static const String routerName = "/home";
@@ -81,18 +80,7 @@ class HomePageState extends State<HomePage> {
       fbFanPageId: '735951703168873',
       fbFanPageUrl: 'https://www.facebook.com/NKUST.ITC/',
       githubUrl: 'https://github.com/NKUST-ITC',
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(ApIcon.codeIcon),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => OpenSourcePage(),
-              ),
-            );
-          },
-        )
-      ],
+      actions: <Widget>[],
     );
   }
 
