@@ -27,6 +27,7 @@ import 'package:wtuc_ap/pages/study/teaching_evaluation_page.dart';
 import '../config/constants.dart';
 import '../res/assets.dart';
 import '../utils/app_localizations.dart';
+import 'login/change_passwrod_page.dart';
 import 'login_page.dart';
 import 'setting_page.dart';
 import 'shcool_info_page.dart';
@@ -390,20 +391,24 @@ class HomePageState extends State<HomePage> {
           );
         },
         onError: (GeneralResponse response) {
-          String message = '';
           switch (response.statusCode) {
             case ApiStatusCode.LOGIN_FAIL:
-              message = ap.loginFail;
+              ApUtils.showToast(context, ap.loginFail);
+              checkLogin();
+              break;
+            case ApiStatusCode.NEED_CHANGE_PASSWORD:
+              ApUtils.showToast(
+                  context, AppLocalizations.of(context).needChangePasswordHint);
+              _openChangePasswordPage(username);
               break;
             default:
-              message = ap.somethingError;
+              _homeKey.currentState.showSnackBar(
+                text: ap.unknownError,
+                actionText: ap.retry,
+                onSnackBarTapped: _login,
+              );
               break;
           }
-          _homeKey.currentState.showSnackBar(
-            text: message,
-            actionText: ap.retry,
-            onSnackBarTapped: _login,
-          );
         },
       ),
     );
@@ -510,6 +515,19 @@ class HomePageState extends State<HomePage> {
             config.getBool(Constants.QUICK_FILL_IN_TEACHING_EVALUATION);
         print(canUseQuickFillIn);
       });
+    }
+  }
+
+  Future<void> _openChangePasswordPage(String username) async {
+    final String password = await Navigator.of(context).push(
+      MaterialPageRoute<String>(
+        builder: (_) => ChangePasswordPage(username: username),
+      ),
+    );
+    if (password != null) {
+      Preferences.setStringSecurity(Constants.PREF_PASSWORD, password);
+      await Future.delayed(Duration(seconds: 1));
+      _login();
     }
   }
 }

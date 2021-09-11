@@ -1,22 +1,21 @@
 //dio
 import 'dart:typed_data';
 
-import 'package:ap_common/models/semester_data.dart';
-import 'package:ap_common/models/user_info.dart';
-import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:crypto/crypto.dart';
-import 'package:html/parser.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-
-import 'package:wtuc_ap/api/parser/wtuc_ap_parser.dart';
-import 'package:ap_common/models/course_data.dart';
-import 'package:ap_common/models/score_data.dart';
-
 // callback
 import 'package:ap_common/callback/general_callback.dart';
+import 'package:ap_common/models/course_data.dart';
+import 'package:ap_common/models/score_data.dart';
+import 'package:ap_common/models/semester_data.dart';
+import 'package:ap_common/models/user_info.dart';
+import 'package:ap_common_firebase/utils/firebase_crashlytics_utils.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:html/parser.dart';
+import 'package:wtuc_ap/api/parser/wtuc_ap_parser.dart';
 import 'package:wtuc_ap/models/teaching_evaluation.dart';
 
 import 'api_status_code.dart';
@@ -153,9 +152,73 @@ class WebApHelper {
         statusCode: ApiStatusCode.LOGIN_FAIL,
         message: "Login fail.",
       );
+    } else if (loginCheckRequest.data.substring(0, 2000).indexOf("修改密碼") > -1) {
+      throw GeneralResponse(
+        statusCode: ApiStatusCode.NEED_CHANGE_PASSWORD,
+        message: "Need Change Password",
+      );
     }
     infoIsLogin = true;
     return true;
+  }
+
+  Future<String> getChangePasswordInfo({
+    @required String username,
+  }) async {
+    var query = await dio.post(
+      'https://info.wzu.edu.tw/wtuc/system/modpwd.jsp',
+      options: Options(contentType: Headers.formUrlEncodedContentType),
+      data: {
+        'usrid': username,
+        'idno': username,
+      },
+    );
+    var html = query.data;
+    if (html is Uint8List) {
+      html = clearTransEncoding(html);
+    }
+    var document = parse(html);
+    var table = document.getElementsByTagName('table');
+    return table.first.text;
+  }
+
+  Future<bool> changePassword({
+    @required String username,
+    @required String password,
+  }) async {
+    var query = await dio.post(
+      'https://info.wzu.edu.tw/wtuc/system/modpwd_upd.jsp',
+      options: Options(contentType: Headers.formUrlEncodedContentType),
+      data: {
+        'usrid': username,
+        'idno': username,
+        'opwd': password,
+        'spwd': password,
+      },
+    );
+    var html = query.data;
+    if (html is Uint8List) {
+      html = clearTransEncoding(html);
+    }
+    if (html.indexOf("成功修改") > -1) {
+      return true;
+    } else {
+      var document = parse(html);
+      final message = document.getElementById('msg');
+      if (message != null) {
+        throw GeneralResponse(
+          statusCode: 406,
+          message: message.getElementsByTagName('b').first.text,
+        );
+      } else {
+        FirebaseCrashlytics.instance.recordError(
+          GeneralResponse.unknownError(),
+          StackTrace.current,
+          reason: html,
+        );
+        throw GeneralResponse.unknownError();
+      }
+    }
   }
 
   Future<Response> wtucApQuery(

@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
+import 'package:wtuc_ap/pages/login/change_passwrod_page.dart';
+import 'package:wtuc_ap/utils/app_localizations.dart';
 
 import '../config/constants.dart';
 
@@ -145,7 +147,7 @@ class LoginPageState extends State<LoginPage> {
           ? Preferences.getStringSecurity(Constants.PREF_PASSWORD, '')
           : '';
     });
-    }
+  }
 
   _login() async {
     if (_username.text.isEmpty || _password.text.isEmpty) {
@@ -188,6 +190,10 @@ class LoginPageState extends State<LoginPage> {
               case ApiStatusCode.LOGIN_FAIL:
                 message = ap.loginFail;
                 break;
+              case ApiStatusCode.NEED_CHANGE_PASSWORD:
+                message = AppLocalizations.of(context).needChangePasswordHint;
+                _openChangePasswordPage();
+                break;
               default:
                 message = ap.somethingError;
                 break;
@@ -221,5 +227,18 @@ class LoginPageState extends State<LoginPage> {
     setState(() {
       isAutoLogin = false;
     });
+  }
+
+  Future<void> _openChangePasswordPage() async {
+    final String password = await Navigator.of(context).push(
+      MaterialPageRoute<String>(
+        builder: (_) => ChangePasswordPage(username: _username.text),
+      ),
+    );
+    if (password != null) {
+      _password.text = password;
+      await Future.delayed(Duration(seconds: 1));
+      _login();
+    }
   }
 }

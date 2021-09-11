@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+
 import 'package:ap_common/callback/general_callback.dart';
 import 'package:ap_common/models/course_data.dart';
 import 'package:ap_common/models/score_data.dart';
-
 import 'package:ap_common/models/semester_data.dart';
 import 'package:ap_common/models/user_info.dart';
-
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wtuc_ap/api/wtuc_helper.dart';
 import 'package:wtuc_ap/models/teaching_evaluation.dart';
+
 export 'package:ap_common/callback/general_callback.dart';
 
 class Helper {
@@ -41,6 +41,57 @@ class Helper {
       );
       Helper.username = username;
       Helper.password = password;
+      if (callback != null)
+        return callback.onSuccess(GeneralResponse.success());
+      else
+        return GeneralResponse.success();
+    } on GeneralResponse catch (response) {
+      callback?.onError(response);
+    } on DioError catch (e) {
+      callback?.onFailure(e);
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
+    }
+    return null;
+  }
+
+  Future<String> getChangePasswordInfo({
+    @required String username,
+    GeneralCallback<String> callback,
+  }) async {
+    try {
+      final String text = await WebApHelper.instance.getChangePasswordInfo(
+        username: username,
+      );
+      if (callback != null)
+        return callback.onSuccess(text);
+      else
+        return text;
+    } on GeneralResponse catch (response) {
+      callback?.onError(response);
+    } on DioError catch (e) {
+      callback?.onFailure(e);
+    } catch (e, s) {
+      callback?.onError(GeneralResponse.unknownError());
+      if (FirebaseUtils.isSupportCrashlytics)
+        await FirebaseCrashlytics.instance.recordError(e, s);
+    }
+    return null;
+  }
+
+  Future<GeneralResponse> changePassword({
+    @required String username,
+    @required String password,
+    @required String passwordConfirm,
+    GeneralCallback<GeneralResponse> callback,
+  }) async {
+    try {
+      await WebApHelper.instance.changePassword(
+        username: username,
+        password: password,
+      );
       if (callback != null)
         return callback.onSuccess(GeneralResponse.success());
       else
