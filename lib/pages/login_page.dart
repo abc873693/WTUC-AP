@@ -145,11 +145,7 @@ class LoginPageState extends State<LoginPage> {
           ? Preferences.getStringSecurity(Constants.PREF_PASSWORD, '')
           : '';
     });
-    await Future.delayed(Duration(microseconds: 50));
-    if (isAutoLogin) {
-      _login();
     }
-  }
 
   _login() async {
     if (_username.text.isEmpty || _password.text.isEmpty) {
