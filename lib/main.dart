@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:ap_common/api/announcement_helper.dart';
 import 'package:ap_common/utils/preferences.dart';
+import 'package:ap_common_firebase/utils/firebase_crashlytics_utils.dart';
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -23,7 +23,7 @@ void main() async {
   if (FirebaseUtils.isSupportCore) await Firebase.initializeApp();
   AnnouncementHelper.instance.organization = 'wtuc';
   AnnouncementHelper.instance.appleBundleId = 'com.wtuc.ap';
-  if (!kDebugMode && FirebaseUtils.isSupportCrashlytics) {
+  if (!kDebugMode && FirebaseCrashlyticsUtils.isSupported) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
     runZonedGuarded(() {
       runApp(MyApp());

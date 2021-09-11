@@ -104,7 +104,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           themeMode: themeMode,
           locale: locale,
           navigatorObservers: [
-            if (FirebaseUtils.isSupportAnalytics)
+            if (FirebaseAnalyticsUtils.isSupported)
               FirebaseAnalyticsObserver(analytics: analytics),
           ],
           localizationsDelegates: [

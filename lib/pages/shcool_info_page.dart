@@ -11,7 +11,6 @@ import 'package:ap_common/views/notification_list_view.dart';
 import 'package:ap_common/views/pdf_view.dart';
 import 'package:ap_common/views/phone_list_view.dart';
 import 'package:ap_common_firebase/utils/firebase_remote_config_utils.dart';
-import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:wtuc_ap/config/constants.dart';
 
@@ -128,7 +127,7 @@ class SchoolInfoPageState extends State<SchoolInfoPage>
 
   _getSchedules() async {
     String pdfUrl;
-    if (FirebaseUtils.isSupportRemoteConfig) {
+    if (FirebaseRemoteConfigUtils.isSupported) {
       try {
         final RemoteConfig remoteConfig = RemoteConfig.instance;
         await remoteConfig.fetch();

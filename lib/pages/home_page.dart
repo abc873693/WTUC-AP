@@ -13,6 +13,7 @@ import 'package:ap_common/utils/dialog_utils.dart';
 import 'package:ap_common/utils/preferences.dart';
 import 'package:ap_common/widgets/ap_drawer.dart';
 import 'package:ap_common_firebase/utils/firebase_analytics_utils.dart';
+import 'package:ap_common_firebase/utils/firebase_message_utils.dart';
 import 'package:ap_common_firebase/utils/firebase_remote_config_utils.dart';
 import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -93,7 +94,7 @@ class HomePageState extends State<HomePage> {
     } else {
       checkLogin();
     }
-    if (FirebaseUtils.isSupportRemoteConfig) {
+    if (FirebaseRemoteConfigUtils.isSupported) {
       _checkUpdate();
     }
     super.initState();
@@ -125,7 +126,7 @@ class HomePageState extends State<HomePage> {
                 organizationDomain: Constants.MAIL_DOMAIN,
               ),
             );
-            if (FirebaseUtils.isSupportCloudMessage) {
+            if (FirebaseMessagingUtils.isSupported) {
               try {
                 final messaging = FirebaseMessaging.instance;
                 NotificationSettings settings =
@@ -508,7 +509,7 @@ class HomePageState extends State<HomePage> {
   }
 
   _checkCanUseQuickFillIn() async {
-    if (FirebaseUtils.isSupportRemoteConfig) {
+    if (FirebaseRemoteConfigUtils.isSupported) {
       final config = RemoteConfig.instance;
       setState(() {
         canUseQuickFillIn =
