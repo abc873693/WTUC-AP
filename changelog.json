@@ -1,4 +1,10 @@
 {
+  "400": {
+    "visible": true,
+    "date": "2021/05/01",
+    "zh-TW": "* 加入自動跳轉修改密碼功能\n* 加入登入密碼錯誤強制登出",
+    "en-US": "* Add auto re-direct to change password.\n* Add force logout when login fail."
+  },
   "302": {
     "visible": true,
     "date": "2021/05/01",
