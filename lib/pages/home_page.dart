@@ -9,6 +9,7 @@ import 'package:ap_common/resources/ap_theme.dart';
 import 'package:ap_common/scaffold/home_page_scaffold.dart';
 import 'package:ap_common/utils/ap_localizations.dart';
 import 'package:ap_common/utils/ap_utils.dart';
+import 'package:ap_common/utils/app_tracking_utils.dart';
 import 'package:ap_common/utils/dialog_utils.dart';
 import 'package:ap_common/utils/preferences.dart';
 import 'package:ap_common/widgets/ap_drawer.dart';
@@ -98,6 +99,10 @@ class HomePageState extends State<HomePage> {
         }
         if (FirebaseRemoteConfigUtils.isSupported) {
           _checkUpdate();
+        }
+        if (await AppTrackingUtils.trackingAuthorizationStatus ==
+            TrackingStatus.notDetermined) {
+          AppTrackingUtils.show(context: context);
         }
       },
     );

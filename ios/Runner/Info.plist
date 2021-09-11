@@ -32,6 +32,8 @@
 	<string>Feature calendar would be add schedule to calendar app</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Feature course table export</string>
+	<key>NSUserTrackingUsageDescription</key>
+    <string>We would like to log your usage to improve user experience, and collect crash report to fix bugs and improve stability.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
