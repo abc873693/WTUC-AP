@@ -30,5 +30,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Feature course table export</string>
 </dict>
 </plist>
