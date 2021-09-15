@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:ap_common/utils/crashlytics_utils.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/parser.dart' show parse;
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
 
@@ -161,7 +162,7 @@ Future<Map<String, dynamic>> wtucCoursetableParser(dynamic html) async {
   try {
     for (int key = 0; key < weekdays.length; key++) {
       for (int eachSession = 1;
-          eachSession < data['timeCodes'].length + 1;
+          eachSession < secondTable.length;
           eachSession++) {
         if (eachSession == 11) {
           // bypass "night" content td.
