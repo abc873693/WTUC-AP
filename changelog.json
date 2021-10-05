@@ -1,4 +1,10 @@
 {
+  "500": {
+    "visible": true,
+    "date": "2021/10/06",
+    "zh-TW": "* 穩定性更新",
+    "en-US": "* Update stability."
+  },
   "401": {
     "visible": true,
     "date": "2021/09/15",

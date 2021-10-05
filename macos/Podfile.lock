@@ -27,7 +27,7 @@ PODS:
     - Firebase/Messaging (~> 8.6.0)
     - firebase_core
     - FlutterMacOS
-  - firebase_remote_config (0.10.0-5):
+  - firebase_remote_config (0.11.0):
     - Firebase/CoreOnly (~> 8.6.0)
     - Firebase/RemoteConfig (~> 8.6.0)
     - firebase_core
@@ -207,7 +207,7 @@ SPEC CHECKSUMS:
   firebase_core: 9a84b9f2d3a597a3ddc716942bc7e47d6eb85649
   firebase_crashlytics: b571067e384448863aa09b4b030fc46c34f3f1a3
   firebase_messaging: 49f57ae8674d95e1f8796e1e0e40b19307a23739
-  firebase_remote_config: f44438c96a161dd8687a973870fdf318aee35064
+  firebase_remote_config: 54a550aac70093caf9526f992252257977a52911
   FirebaseABTesting: c3e48ebf5e7e5c674c5a131c68e941d7921d83dc
   FirebaseCore: a753c231801f04f5ccd10cc92119ad1b12a61165
   FirebaseCoreDiagnostics: 3721920bde3a9a6d5aa093c1d25e9d3e47f694af
@@ -235,4 +235,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0d3963a09fc94f580682bd88480486da345dc3f0
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2
