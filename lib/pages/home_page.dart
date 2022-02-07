@@ -20,6 +20,7 @@ import 'package:ap_common_firebase/utils/firebase_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:wtuc_ap/api/api_status_code.dart';
 import 'package:wtuc_ap/api/helper.dart';
@@ -104,6 +105,13 @@ class HomePageState extends State<HomePage> {
             TrackingStatus.notDetermined) {
           AppTrackingUtils.show(context: context);
         }
+        SystemChrome.setSystemUIOverlayStyle(
+          const SystemUiOverlayStyle(
+            systemNavigationBarContrastEnforced: true,
+            systemNavigationBarColor: Colors.transparent,
+          ),
+        );
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       },
     );
     super.initState();
