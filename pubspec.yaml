@@ -14,9 +14,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  ap_common: ^0.19.1
+  ap_common: ^0.20.0
   #    path: ../ap_common
-  ap_common_firebase: ^0.11.1
+  ap_common_firebase: ^0.13.0
   dio: ^4.0.0
   dio_http_cache:
     git:
@@ -31,6 +31,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+#dependency_overrides:
+#  ap_common:
+#    path: ../../GitHub-NKUST-ITC/ap_common
+#  ap_common_firebase:
+#    path: ../ap_common_firebase
 
 flutter:
 
