@@ -1,7 +1,15 @@
 # wtuc_ap
 
-A new Flutter application.
+Providing a more accessible entrance for student of WTUC to access school system, built on Google's open source framework [Flutter](https://flutter.dev).
 
+## Team
+
+"WTUC AP" was built on AP Common. The ap series started from NKUST-AP, then AP Common was made to make development more streamlined.  
+The app was currently maintained by the AP team, and host by [OCF (Open Culture Foundation)](https://ocf.tw) on App Store.
+
+Development Team: 林義翔(takidog), 房志剛(Rainvisitor)
+
+OCF was founded by several Taiwan’s open source community. Main goal is to support local communities advocate the use of open technologies in broader sectors.
 ## Getting Started
 
 This project is a starting point for a Flutter application.
